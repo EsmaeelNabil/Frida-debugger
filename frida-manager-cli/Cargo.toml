@@ -1,0 +1,12 @@
+[package]
+name = "frida-manager-cli"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+download_rs = "0.2.0"
+reqwest = "0.11.22"
+select = "0.6.0"
+tokio = { version = "1.0.0", features = ["rt", "rt-multi-thread", "macros"] }
