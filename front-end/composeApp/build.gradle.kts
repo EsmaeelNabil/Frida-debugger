@@ -20,7 +20,9 @@ kotlin {
         commonMain.dependencies {
             implementation(compose.runtime)
             implementation(compose.foundation)
-            implementation(compose.material)
+            implementation(compose.material3)
+            implementation(compose.preview)
+            implementation(compose.materialIconsExtended)
             @OptIn(ExperimentalComposeLibrary::class)
             implementation(compose.components.resources)
             implementation("io.socket:socket.io-client:2.1.0")

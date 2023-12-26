@@ -1,16 +1,7 @@
 import io.socket.client.IO
 import io.socket.client.Socket
-import kotlinx.coroutines.channels.awaitClose
-import kotlinx.coroutines.flow.callbackFlow
 import java.net.URI
 
-
-fun <T> onEventFlow(socket: Socket, event: String, evaluation: (Any?) -> T) = callbackFlow<T> {
-    socket.on(event) {
-        trySend(evaluation(it.getOrNull(0)))
-    }
-    awaitClose { }
-}
 
 object SocketManager {
     fun getClient(): Socket {

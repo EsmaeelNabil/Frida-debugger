@@ -12,5 +12,10 @@ enum class SocketEvents() {
     SCRIPTS_PATH,
     GET_SCRIPTS,
     SCRIPTS,
-    ON_MESSAGE
+    UNLOAD_SCRIPTS,
+    ON_MESSAGE,
+
+    RUN_APP;
+
+
 }
