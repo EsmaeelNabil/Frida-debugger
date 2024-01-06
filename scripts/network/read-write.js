@@ -5,20 +5,20 @@ setImmediate(function() {
 
 		bufferedReader.readLine.overload().implementation = function () {
 			var line = this.readLine();
-			console.log("[*] BufferedReader.readLine called: " + line +"\n");
+			send("[*] BufferedReader.readLine called: " + line +"\n");
 			return line;
 		};
 
 		bufferedReader.read.overload().implementation = function () {
 			var intVal = this.read();
-			console.log("[*] BufferedReader.read called: " + intVal +"\n");
+			send("[*] BufferedReader.read called: " + intVal +"\n");
 			return intVal;
 		};
 
 		var writer = Java.use("java.io.Writer");
 
 		writer.write.overload('java.lang.String').implementation = function (var0) {
-			console.log("[*] Writer.write called: " + var0 +"\n");
+			send("[*] Writer.write called: " + var0 +"\n");
 			this.write(var0);
 		};
 	});
