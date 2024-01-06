@@ -15,7 +15,6 @@ fun main() = application {
 
     Window(onCloseRequest = ::exitApplication) {
         App(this.window, socket)
-        HttpURLConnection
     }
 }
 

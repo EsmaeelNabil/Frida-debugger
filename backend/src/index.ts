@@ -1,14 +1,13 @@
 import cors from "cors";
 import express from "express";
-import {Application, SendMessage} from "frida";
-import {Device} from "frida/dist/device";
+import { Application, Process, SendMessage } from "frida";
+import { Device } from "frida/dist/device";
 import http from "http";
-import {Server} from "socket.io";
-import {DeviceManagerService} from "./DeviceManagerService";
-import {InjectionManager} from "./InjectionManager";
-import {FilesManager} from "./FilesManager";
-import {AppInfoScript} from "./scripts";
-import * as cache from "redis";
+import { Server } from "socket.io";
+import { DeviceManagerService } from "./DeviceManagerService";
+import { InjectionManager } from "./InjectionManager";
+import { FilesManager } from "./FilesManager";
+import { AppInfoScript } from "./scripts";
 
 const app = express();
 let scriptsMap = new Map<string, string>();
@@ -50,9 +49,9 @@ function getScriptsFromCache(scriptNames: string) {
     return finalScript;
 }
 
-function appendScript(original: string | null | undefined, addMe: string): string {
+function appendScript(original: string | null, addMe: string): string {
     // Check if the original string is not null, undefined, or empty
-    if (original && original.trim() !== '') {
+    if (original !== null && original.trim() !== '') {
         // Append a new line and the other string
         return `${original}\n${addMe}`;
     } else {
@@ -72,46 +71,61 @@ io.on("connection", (socket) => {
     let injectionManager = new InjectionManager();
 
     socket.on("IsServerUp", async () => {
-        io.emit("IsServerUp", {isServerUp: true});
+        io.emit("IsServerUp", { isServerUp: true });
     });
 
     socket.on("GET_DEVICES", () => {
         deviceManager.getDevices().then((devices) => {
             socket.emit("DEVICES", devices);
-            console.log(devices)
         });
     });
 
-    socket.on("GET_APPS", async (deviceId) => {
-        deviceManager.getApps(deviceId).then((apps: Application[]) => {
-            socket.emit("APPS", apps);
-            console.log(apps)
-        });
+    socket.on("GET_APPS", async (deviceId, appName?) => {
+        try {
+            if (appName) {
+                deviceManager.getApp(deviceId, appName).then((app: Application | undefined) => {
+                    socket.emit("APPS", [app]);
+                });
+            } else {
+                deviceManager.getApps(deviceId).then((apps: Application[]) => {
+                    socket.emit("APPS", apps);
+                });
+            }
+        } catch (e) {
+            console.log(e);
+        } 
+
     });
 
     socket.on("GET_PROCESSES", async (deviceId) => {
-        deviceManager.getProcesses(deviceId).then((apps: Application[]) => {
+        deviceManager.getProcesses(deviceId).then((apps: Process[]) => {
             socket.emit("PROCESSES", apps);
+        });
+    });
+
+    socket.on("UNLOAD_SCRIPTS", async () => { 
+        await injectionManager.unload_scripts();
+    }); 
+
+    socket.on("RUN_APP", async (data) => {
+        const deviceId = data[0];
+        const appName = data[1];
+        let device = await deviceManager.getDevice(deviceId);
+
+        await injectionManager.run_app(device, appName).then((pid) => {
+            socket.emit("ON_MESSAGE", `App ${appName} is running now with id : ${pid}`);
         });
     });
 
     socket.on("ATTACH", async (data) => {
         const deviceId = data[0];
         const appName = data[1];
-        const scriptNames = data[2];
-        const customScript = data[3];
-        console.log(deviceId)
-        console.log(appName)
-        console.log(scriptNames)
-        console.log(customScript);
-        console.log(data)
+        const script = data[2];
+
+        console.log(data);
 
         let device = await deviceManager.getDevice(deviceId);
-        //todo make take multiple file names and merge them
-        let script = getScriptsFromCache(scriptNames) || AppInfoScript;
-        script = appendScript(script, customScript);
-
-
+ 
         await injectionManager.attach(
             device,
             script,
@@ -133,8 +147,6 @@ io.on("connection", (socket) => {
         const appPackage = data[1];
         const scriptNames = data[2];
         const customScript = data[3];
-        console.log(deviceId, appPackage, scriptNames, customScript);
-
         let device = await deviceManager.getDevice(deviceId);
 
         //todo make take multiple file names and merge them
@@ -171,7 +183,7 @@ io.on("connection", (socket) => {
         const scriptsList = Array.from(scriptsMap.entries())
             .map(
                 ([script, value]) =>
-                    ({script, value})
+                    ({ script, value })
             );
 
         socket.emit("SCRIPTS", scriptsList);

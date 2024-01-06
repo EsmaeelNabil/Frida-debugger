@@ -14,44 +14,80 @@
     });
 * */
 
-import {Device, Script, SendMessage, Session} from "frida";
+import { Device, ProcessID, Script, SendMessage, Session } from "frida";
 
 export class InjectionManager {
     loadedScripts: Script[] = [];
 
+    async unload_scripts(): Promise<void> {
+        try {
+            await Promise.all(this.loadedScripts.map(async (script) => {
+                if (script.isDestroyed) {
+                    console.warn("Script has already been destroyed.");
+                    return;
+                }
+
+                await script.unload();
+                console.log("Script unloaded successfully.");
+            }));
+
+            // Clear the array after unloading all scripts
+            this.loadedScripts = [];
+        } catch (error) {
+            console.error("Error unloading scripts:", error);
+        }
+    }
+
+    async run_app(device: Device, appName: string): Promise<ProcessID> {
+        const pid = await device.spawn(appName);
+        device.resume(pid);
+        return pid;
+    }
+
     async attach(device: Device,
-                 scriptSource: string,
-                 appProcessId: string,
-                 onScriptDestroyed: () => void,
-                 onNewMessage: (message: string) => void,
+        scriptSource: string,
+        appProcessId: string,
+        onScriptDestroyed: () => void,
+        onNewMessage: (message: string) => void,
     ) {
 
-        const session = await device.attach(appProcessId);
-        await this.createAndLoadScript(
-            session,
-            scriptSource,
-            onScriptDestroyed,
-            onNewMessage
-        )
+        try {
+            const session = await device.attach(appProcessId);
+            await this.createAndLoadScript(
+                session,
+                scriptSource,
+                onScriptDestroyed,
+                onNewMessage
+            )
+        } catch (e) {
+            console.log(e);
+        }
+
     }
 
     async launch(device: Device,
-                 scriptSource: string,
-                 appName: string,
-                 onScriptDestroyed: () => void,
-                 onNewMessage: (message: string) => void,
+        scriptSource: string,
+        appName: string,
+        onScriptDestroyed: () => void,
+        onNewMessage: (message: string) => void,
     ) {
 
-        const pid = await device.spawn(appName);
-        const session = await device.attach(pid);
-        await this.createAndLoadScript(
-            session,
-            scriptSource,
-            onScriptDestroyed,
-            onNewMessage
-        )
+        const pid = await this.run_app(device, appName);
 
-        await device.resume(pid);
+        try {
+
+            const session = await device.attach(pid);
+            await this.createAndLoadScript(
+                session,
+                scriptSource,
+                onScriptDestroyed,
+                onNewMessage
+            )
+
+        } catch (e) {
+            console.log(e);
+        }
+
     }
 
     private async createAndLoadScript(
@@ -60,19 +96,24 @@ export class InjectionManager {
         onScriptDestroyed: () => void,
         onNewMessage: (message: string) => void,
     ): Promise<Script> {
-        const script = await session.createScript(scriptSource);
-        this.loadedScripts.push(script);
+        try {
+            const script = await session.createScript(scriptSource);
+            this.loadedScripts.push(script);
 
-        script.message.connect((message: SendMessage) => {
-            onNewMessage(message.payload);
-        });
+            script.message.connect((message: SendMessage) => {
+                onNewMessage(message.payload);
+            });
 
-        script.destroyed.connect(onScriptDestroyed);
+            script.destroyed.connect(onScriptDestroyed);
 
-        await script.load();
+            await script.load();
 
-        onNewMessage('[*] Script loaded');
-        return script;
+            onNewMessage('[*] Script loaded');
+            return script;
+        } catch (e) {
+            console.log(e);
+            return undefined;
+        }
     }
 
 }

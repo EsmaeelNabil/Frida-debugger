@@ -1,5 +1,5 @@
-import {Application, Device, DeviceManager, getDeviceManager, Process} from 'frida';
-import {Scope} from 'frida/dist/device';
+import { Application, Device, DeviceManager, getDeviceManager, Process } from 'frida';
+import { Scope } from 'frida/dist/device';
 
 export interface OnDeviceUpdateCallback {
     (devices: Device[]): void;
@@ -55,7 +55,7 @@ export class DeviceManagerService {
 
         try {
             if (device) {
-                const applications = await device.enumerateApplications({scope: Scope.Metadata});
+                const applications = await device.enumerateApplications({ scope: Scope.Metadata });
                 return applications;
             }
         } catch (e) {
@@ -65,12 +65,28 @@ export class DeviceManagerService {
         return [];
     }
 
+    async getApp(deviceId: string, appName: string): Promise<Application> {
+        const device = this.devices.find((d) => d.id === deviceId);
+        try {
+            if (device) {
+                const applications = await device.enumerateApplications({ scope: Scope.Minimal });
+                const app = applications.find((app) => {
+                    return app.name.toLowerCase().includes(appName.toLowerCase());
+                });
+                return app;
+            }
+        } catch (e) {
+            console.error(e);
+            return undefined;
+        }
+    }
+
     async getProcesses(deviceId: string): Promise<Process[]> {
         const device = this.devices.find((d) => d.id === deviceId);
 
         try {
             if (device) {
-                const processes = await device.enumerateProcesses({scope: Scope.Metadata});
+                const processes = await device.enumerateProcesses({ scope: Scope.Metadata });
                 return processes;
             }
         } catch (e) {
