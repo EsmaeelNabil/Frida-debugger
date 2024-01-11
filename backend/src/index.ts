@@ -1,12 +1,12 @@
 import cors from "cors";
 import express from "express";
-import { Application, Process, SendMessage } from "frida";
+import { Application, Process } from "frida";
 import { Device } from "frida/dist/device";
 import http from "http";
 import { Server } from "socket.io";
 import { DeviceManagerService } from "./DeviceManagerService";
-import { InjectionManager } from "./InjectionManager";
 import { FilesManager } from "./FilesManager";
+import { InjectionManager } from "./InjectionManager";
 import { AppInfoScript } from "./scripts";
 
 const app = express();
@@ -62,13 +62,15 @@ function appendScript(original: string | null, addMe: string): string {
 
 io.on("connection", (socket) => {
     console.log(socket.id)
+    let injectionManager = new InjectionManager();
+    
     let deviceManager = new DeviceManagerService();
     deviceManager.setOnDeviceUpdateCallback((devices: Device[]) => {
         // todo : Fix me
         socket.emit("DEVICES", devices);
     });
 
-    let injectionManager = new InjectionManager();
+    
 
     socket.on("IsServerUp", async () => {
         io.emit("IsServerUp", { isServerUp: true });

@@ -19,14 +19,33 @@ export class DeviceManagerService {
     constructor() {
         this.deviceManager = getDeviceManager();
 
-        this.deviceManager.added.connect(this.onAdded);
-        this.deviceManager.removed.connect(this.onRemoved);
-        this.deviceManager.changed.connect(this.onChanged);
+        this.deviceManager.added.connect((device) => {
+            console.log(`Device added: ${device.id}`);
+            console.log(this)
+            if (this.devices === undefined) {
+                return
+            }
+            this.devices.push(device);
+            this.onDevicesUpdated();
+        }
+        );
 
-        process.on('SIGTERM', this.stop);
-        process.on('SIGINT', this.stop);
+        this.deviceManager.removed.connect((device) => {
+            console.log(`Device removed: ${device.id}`);
+            console.log(this)
+            if (this.devices === undefined) {
+                return
+            }
+            this.devices = this.devices.filter((d) => d.id !== device.id);
+            this.onDevicesUpdated();
+        });
 
-        this.forceUpdateDevices();
+        this.deviceManager.changed.connect(() => {
+            console.log('Device changed');
+            this.onDevicesUpdated();
+        });
+
+        this.forceUpdateDevices().then(() => { });
     }
 
     async forceUpdateDevices() {
@@ -94,29 +113,5 @@ export class DeviceManagerService {
             return [];
         }
         return [];
-    }
-
-
-    private onAdded(device: Device): void {
-        console.log(`Device added: ${device.id}`);
-        this.devices.push(device);
-        this.onDevicesUpdated();
-    }
-
-    private onRemoved(device: Device): void {
-        console.log(`Device removed: ${device.id}`);
-        this.devices = this.devices.filter((d) => d.id !== device.id);
-        this.onDevicesUpdated();
-    }
-
-    private onChanged(): void {
-        console.log('Device changed');
-        this.onDevicesUpdated();
-    }
-
-    private stop(): void {
-        this.deviceManager?.added.disconnect(this.onAdded);
-        this.deviceManager?.removed.disconnect(this.onRemoved);
-        this.deviceManager?.changed.disconnect(this.onChanged);
     }
 }
