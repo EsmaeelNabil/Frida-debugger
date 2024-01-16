@@ -2,7 +2,7 @@
 
 # list all the android emulators and choose one of them to open it
 # Get list of available Android emulators
-emulators=$(emulator -list-avds)
+emulators=$(/Users/$USER/Library/Android/sdk/emulator/emulator emulator -list-avds)
 
 # Choose one of the emulators
 echo "Choose an emulator to launch:"
