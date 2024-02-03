@@ -4,6 +4,9 @@
 - Powered by Frida, currently only supporting Android soon IOS.
 ```
 
+<img width="1371" alt="Screenshot 2024-02-03 at 11 42 17 PM" src="https://github.com/EsmaeelNabil/Frida-debugger/assets/28542963/8188f2f9-1ddf-4c10-b375-f90ca0b69129">
+
+
 ##### prerequisite
 
 - `node`
@@ -49,7 +52,3 @@ in case you need an updated `Frida-Server` use `tools/fmc` to download it.
 ```
 but it has to be renamed to fridaserver for ./prepareFridaEmulator.sh to work properly.
 ```
-
-![1.png](art%2F1.png)
-![2.png](art%2F2.png)
-![3.png](art%2F3.png)
