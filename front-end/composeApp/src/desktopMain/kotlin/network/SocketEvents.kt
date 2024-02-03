@@ -1,3 +1,5 @@
+package network
+
 enum class SocketEvents() {
     GET_DEVICES,
     DEVICES,

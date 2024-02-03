@@ -4,7 +4,7 @@ import org.jetbrains.compose.ExperimentalComposeLibrary
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.jetbrainsCompose)
-    kotlin("plugin.serialization") version "1.9.21"
+    kotlin("plugin.serialization") version "1.9.22"
 }
 
 kotlin {
@@ -27,10 +27,6 @@ kotlin {
             implementation(compose.components.resources)
             implementation("io.socket:socket.io-client:2.1.0")
             implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.2")
-            implementation("dev.mobile:dadb:1.2.7")
-
-            implementation("eu.jrie.jetbrains:kotlin-shell-core:0.2.1")
-
         }
     }
 }

@@ -1,9 +1,11 @@
 package scripts
 
 import ScriptInputDialog
-import SocketEvents
+import network.SocketEvents
+import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -15,8 +17,10 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import currentDateTimeString
+import androidx.compose.ui.unit.sp
+import currentTime
 import defaultScript
 import io.socket.client.Socket
 import kotlinx.coroutines.Job
@@ -24,7 +28,6 @@ import kotlinx.coroutines.launch
 import models.Application
 import models.Device
 import onEventFlow
-import java.time.LocalDateTime
 
 @Composable
 fun ScriptScreen(socket: Socket, selectedDevice: Device, selectedApp: Application, onBack: () -> Job) {
@@ -37,14 +40,10 @@ fun ScriptScreen(socket: Socket, selectedDevice: Device, selectedApp: Applicatio
     var initialScript by remember { mutableStateOf(defaultScript) }
 
     LaunchedEffect(Unit) {
-        onEventFlow(
-            socket = socket,
-            event = SocketEvents.ON_MESSAGE.name,
-            evaluation = {
-                it.toString()
-            }
+        SocketEvents.ON_MESSAGE.onEventFlow(
+            socket = socket, evaluation = { it.toString() }
         ).collect {
-            messages.add("${LocalDateTime.now().currentDateTimeString()} : $it")
+            messages.add("$currentTime : $it")
             scope.launch {
                 if (autoScrollEnabled)
                     if (scrollState.isScrollInProgress.not())
@@ -53,7 +52,12 @@ fun ScriptScreen(socket: Socket, selectedDevice: Device, selectedApp: Applicatio
         }
     }
 
-    Surface(shape = RoundedCornerShape(24.dp), shadowElevation = 2.dp, modifier = Modifier.padding(16.dp)) {
+    Surface(
+        shape = RoundedCornerShape(24.dp),
+        shadowElevation = 2.dp,
+        modifier = Modifier.padding(16.dp),
+        color = Color.White
+    ) {
         Box {
             Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
 
@@ -74,20 +78,7 @@ fun ScriptScreen(socket: Socket, selectedDevice: Device, selectedApp: Applicatio
 
                     Spacer(modifier = Modifier.width(16.dp))
 
-                    ButtonDebugger(
-                        onClick = {
-                            socket.emit(
-                                SocketEvents.ATTACH.name,
-                                listOf(
-                                    selectedDevice.deviceDetails.id,
-                                    selectedApp.name,
-                                    defaultScript
-                                )
-                            )
-                        }
-                    ) {
-                        Text("Load Defaults")
-                    }
+
 
                     Spacer(modifier = Modifier.width(16.dp))
 
@@ -110,14 +101,7 @@ fun ScriptScreen(socket: Socket, selectedDevice: Device, selectedApp: Applicatio
                 }
 
 
-
-                    LazyColumn(state = scrollState) {
-                        items(messages) { message ->
-                            SelectionContainer {
-                                Text(text = message)
-                            }
-                        }
-                    }
+                ScriptMessageComponent(messages, scrollState)
 
 
             }
@@ -161,6 +145,18 @@ fun ScriptScreen(socket: Socket, selectedDevice: Device, selectedApp: Applicatio
         }
     }
 
+}
+
+@Preview()
+@Composable
+fun ScriptMessageComponent(messages: List<String>, scrollState: LazyListState) {
+    LazyColumn(state = scrollState) {
+        items(messages) { message ->
+            SelectionContainer {
+                Text(text = message, fontWeight = FontWeight.Light, color = Color.Black, fontSize = 14.sp)
+            }
+        }
+    }
 }
 
 @Composable

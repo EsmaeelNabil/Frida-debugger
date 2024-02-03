@@ -1,18 +1,14 @@
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Card
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
-import androidx.compose.material3.TextField
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.awt.ComposeWindow
+import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
-import androidx.compose.ui.window.Window
+import kotlin.io.path.readText
 
 
 @Composable
@@ -21,6 +17,24 @@ fun ScriptInputDialog(
     onDismissRequest: () -> Unit = {},
     onConfirmation: (String) -> Unit = { _ -> }
 ) {
+
+    val window = LocalWindowFrameScope.current
+    var currentScript by remember { mutableStateOf(initialScript) }
+    var openFilePicker by remember { mutableStateOf(false) }
+
+    if (openFilePicker) {
+        window.FileDialog(
+            title = "Open Script",
+            isLoad = true,
+            onResult = { result ->
+                if (result != null) {
+                    currentScript = result.readText()
+                }
+            }
+        )
+    }
+
+
 
     Dialog(onDismissRequest = onDismissRequest) {
         Card(
@@ -36,16 +50,25 @@ fun ScriptInputDialog(
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
 
-                val (text, setText) = remember { mutableStateOf(initialScript) }
 
-                TextField(
-                    modifier = Modifier
-                        .height(160.dp), value = text, onValueChange = setText
-                )
+                Surface(
+                    modifier = Modifier.weight(1f).fillMaxSize(),
+                    shape = RoundedCornerShape(24.dp),
+                ) {
+                    BasicTextField(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(16.dp),
+                        value = currentScript,
+                        onValueChange = { currentScript = it },
+                    )
+                }
+
                 Text(
-                    text = "write frida script",
+                    text = "Write or paste your script here.",
                     modifier = Modifier.padding(16.dp),
                 )
+
                 Row(
                     modifier = Modifier
                         .fillMaxWidth(),
@@ -57,9 +80,16 @@ fun ScriptInputDialog(
                     ) {
                         Text("Dismiss")
                     }
+
+                    TextButton(
+                        onClick = { openFilePicker = true },
+                        modifier = Modifier.padding(8.dp),
+                    ) {
+                        Text("Load from file")
+                    }
                     TextButton(
                         onClick = {
-                            onConfirmation(text)
+                            onConfirmation(currentScript)
                             onDismissRequest()
                         },
                         modifier = Modifier.padding(8.dp),

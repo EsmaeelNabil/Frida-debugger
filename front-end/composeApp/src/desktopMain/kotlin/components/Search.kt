@@ -1,37 +1,53 @@
-package applications
+package components
 
-import androidx.compose.animation.AnimatedVisibility
+import LocalSocket
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import models.Application
+import models.Device
+import network.SocketEvents
 
+
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+fun SearchArea(
+    modifier: Modifier = Modifier,
+    selectedDevice: Device,
+) {
+
+    val socket = LocalSocket.current
+
+    SearchApplications(
+        modifier = modifier,
+        onSearch = {
+            socket.emit(
+                SocketEvents.GET_APPS.name,
+                selectedDevice.deviceDetails.id, it
+            )
+        }
+    )
+
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun searchApplications(
+fun SearchApplications(
+    modifier: Modifier = Modifier,
     onSearch: (String) -> Unit
 ) {
-    var text by remember { mutableStateOf("") } // Query for SearchBar
-    var active by remember { mutableStateOf(false) } // Active state for SearchBar
+    var text by remember { mutableStateOf("") }
+    var active by remember { mutableStateOf(false) }
     val searchHistory = remember { mutableStateListOf("") }
 
-    SearchBar(modifier = Modifier.fillMaxWidth(),
+    SearchBar(
+        modifier = modifier,
         query = text,
         onQueryChange = {
             text = it
@@ -48,7 +64,7 @@ fun searchApplications(
             active = it
         },
         placeholder = {
-            androidx.compose.material3.Text(text = "Enter an application name ex: Camera")
+            Text(text = "Ex: Camera", fontWeight = FontWeight.Thin)
         },
         leadingIcon = {
             Icon(imageVector = Icons.Default.Search, contentDescription = "Search icon")
@@ -67,8 +83,9 @@ fun searchApplications(
                     contentDescription = "Close icon"
                 )
             }
-        }
+        },
     ) {
 
     }
+
 }
