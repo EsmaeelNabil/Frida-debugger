@@ -88,6 +88,12 @@ fun ScriptScreen(socket: Socket, selectedDevice: Device, selectedApp: Applicatio
                         Text("Unload Scripts")
                     }
 
+                    ButtonDebugger(
+                        onClick = { messages.clear() }
+                    ) {
+                        Text("Clear")
+                    }
+
                     Spacer(modifier = Modifier.width(16.dp))
 
                     ButtonDebugger(onClick = {

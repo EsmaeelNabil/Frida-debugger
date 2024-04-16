@@ -79,7 +79,6 @@ Java.perform(function () {
     send(Builder);
     Builder.build.implementation = function () {
         this.interceptors().clear();
-        //var MyInterceptorObj = MyInterceptor.$new();
         this.interceptors().add(MyInterceptorObj);
         var result = this.build();
         return result;
@@ -87,10 +86,8 @@ Java.perform(function () {
 
     Builder.addInterceptor.implementation = function (interceptor) {
         this.interceptors().clear();
-        //var MyInterceptorObj = MyInterceptor.$new();
         this.interceptors().add(MyInterceptorObj);
         return this;
-        //return this.addInterceptor(interceptor);
     };
 
 

@@ -31,12 +31,13 @@ if [ -z "$FRIDA_SERVER_PID" ]; then
     echo -e "${YELLOW}Frida server is not running on $EMULATOR_NAME.${NC}"
     # push frida server using adb to emulator device after choosing the emulator
     adb -s $DEVICE_SERIAL push fridaserver /data/local/tmp/
-    adb -s $DEVICE_SERIAL cd /data/local/tmp/ && ls -l
+    adb -s $DEVICE_SERIAL shell "cd /data/local/tmp/ && ls -l"
     # make frida server executable
-    adb -s $DEVICE_SERIAL shell chmod 777 /data/local/tmp/fridaserver
+    adb -s $DEVICE_SERIAL shell "chmod 777 /data/local/tmp/fridaserver"
     adb root
     # run frida server
-    adb -s $DEVICE_SERIAL shell /data/local/tmp/fridaserver &
+    adb -s $DEVICE_SERIAL shell "chmod 777 /data/local/tmp/fridaserver"    
+    adb -s $DEVICE_SERIAL shell "/data/local/tmp/fridaserver &"
     # get the pid of frida server
     FRIDA_SERVER_PID=$(adb -s $DEVICE_SERIAL shell ps | grep fridaserver | awk '{print $2}')
     # get the name of the emulator
