@@ -4,7 +4,7 @@
   "main": "index.js",
   "license": "MIT",
   "scripts": {
-    "start": "nodemon"
+    "start": "ts-node ./src/index.ts"
   },
   "dependencies": {
     "@types/express": "^4.17.21",

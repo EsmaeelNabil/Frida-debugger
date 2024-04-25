@@ -19,7 +19,7 @@ const io = new Server(server, {
         methods: ["GET", "POST"],
     },
 });
-
+ 
 app.use(cors());
 
 server.listen(3002, () => {

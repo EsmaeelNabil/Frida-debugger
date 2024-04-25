@@ -25,13 +25,24 @@ yarn install
 ```
 
 ##### running in dev mode
-- for `backend` do `cd Frida-debugger/backend` and run 
+- for `backend` 
+
+do `cd Frida-debugger/backend` and run 
 
 ```
 yarn start
 ```
 
-- for `desktop app/front-end` do `cd Frida-debugger/front-end`
+###### Docker 
+```
+  docker build -t frida-debugger .
+```
+then 
+```
+  docker run --security-opt seccomp:unconfined -it --privileged -p 3002:3002 frida-debugger
+```
+
+- for `front-end` do `cd Frida-debugger/front-end`
 
 ```
 ./gradlew run
