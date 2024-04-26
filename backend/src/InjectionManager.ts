@@ -1,20 +1,4 @@
-/*
- socket.on("START_ATTACH", async (deviceId, appProcessId) => {
-        let device = await deviceManager.getDevice(deviceId);
-        const session = await device.attach(appProcessId)
-        console.log('[*] Process Attached');
-        const script = await session.createScript(load_stetho);
-        script.message.connect((message : SendMessage) => {
-            console.log('[*] Message:', message.payload);
-            socket.emit("ON_MESSAGE", message.payload);
-        });
-        await script.load();
-        console.log('[*] Script loaded');
-
-    });
-* */
-
-import { Device, ProcessID, Script, SendMessage, Session } from "frida";
+import {Device, ProcessID, Script, SendMessage, Session} from "frida";
 
 export class InjectionManager {
     loadedScripts: Script[] = [];
@@ -40,42 +24,22 @@ export class InjectionManager {
 
     async run_app(device: Device, appName: string): Promise<ProcessID> {
         const pid = await device.spawn(appName);
-        device.resume(pid);
+        await device.resume(pid);
         return pid;
     }
 
-    async attach(device: Device,
-        scriptSource: string,
-        appProcessId: string,
-        onScriptDestroyed: () => void,
-        onNewMessage: (message: string) => void,
-    ) {
 
-        try {
-            const session = await device.attach(appProcessId);
-            await this.createAndLoadScript(
-                session,
-                scriptSource,
-                onScriptDestroyed,
-                onNewMessage
-            )
-        } catch (e) {
-            console.log(e);
-        }
-
-    }
-
-    async launch(device: Device,
+    async handleApp(
+        device: Device,
         scriptSource: string,
         appName: string,
         onScriptDestroyed: () => void,
         onNewMessage: (message: string) => void,
+        event: 'attach' | 'launch'
     ) {
-
-        const pid = await this.run_app(device, appName);
+        const pid = event === 'launch' ? await this.run_app(device, appName) : appName;
 
         try {
-
             const session = await device.attach(pid);
             await this.createAndLoadScript(
                 session,
@@ -83,19 +47,37 @@ export class InjectionManager {
                 onScriptDestroyed,
                 onNewMessage
             )
-
         } catch (e) {
             console.log(e);
         }
+    }
 
+    async attach(
+        device: Device,
+        scriptSource: string,
+        appProcessId: string,
+        onScriptDestroyed: () => void,
+        onNewMessage: (message: string) => void
+    ) {
+        await this.handleApp(device, scriptSource, appProcessId, onScriptDestroyed, onNewMessage, 'attach');
+    }
+
+    async launch(
+        device: Device,
+        scriptSource: string,
+        appName: string,
+        onScriptDestroyed: () => void,
+        onNewMessage: (message: string) => void
+    ) {
+        await this.handleApp(device, scriptSource, appName, onScriptDestroyed, onNewMessage, 'launch');
     }
 
     private async createAndLoadScript(
         session: Session,
         scriptSource: string,
         onScriptDestroyed: () => void,
-        onNewMessage: (message: string) => void,
-    ): Promise<Script> {
+        onNewMessage: (message: string) => void
+    ): Promise<Script | undefined> {
         try {
             const script = await session.createScript(scriptSource);
             this.loadedScripts.push(script);
@@ -112,7 +94,7 @@ export class InjectionManager {
             return script;
         } catch (e) {
             console.log(e);
-            return undefined;
+            throw e;
         }
     }
 

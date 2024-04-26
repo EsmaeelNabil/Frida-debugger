@@ -1,13 +1,13 @@
 import cors from "cors";
 import express from "express";
-import { Application, Process } from "frida";
-import { Device } from "frida/dist/device";
+import {Application, Process} from "frida";
+import {Device} from "frida/dist/device";
 import http from "http";
-import { Server } from "socket.io";
-import { DeviceManagerService } from "./DeviceManagerService";
-import { FilesManager } from "./FilesManager";
-import { InjectionManager } from "./InjectionManager";
-import { AppInfoScript } from "./scripts";
+import {Server} from "socket.io";
+import {DeviceManagerService} from "./DeviceManagerService";
+import {FilesManager} from "./FilesManager";
+import {InjectionManager} from "./InjectionManager";
+import {AppInfoScript} from "./scripts";
 
 const app = express();
 let scriptsMap = new Map<string, string>();
@@ -19,7 +19,7 @@ const io = new Server(server, {
         methods: ["GET", "POST"],
     },
 });
- 
+
 app.use(cors());
 
 server.listen(3002, () => {
@@ -60,20 +60,40 @@ function appendScript(original: string | null, addMe: string): string {
     }
 }
 
+
 io.on("connection", (socket) => {
     console.log(socket.id)
-    let injectionManager = new InjectionManager();
-    
+    let injectionManager: InjectionManager = new InjectionManager();
+
     let deviceManager = new DeviceManagerService();
     deviceManager.setOnDeviceUpdateCallback((devices: Device[]) => {
         // todo : Fix me
         socket.emit("DEVICES", devices);
     });
 
-    
+    function handleAttachOrLaunch(deviceId: any, appName: any, script: any, event: String) {
+        deviceManager.getDevice(deviceId).then((device: Device) => {
+            // @ts-ignore
+            injectionManager[event](
+                device,
+                script,
+                appName,
+                () => {
+                    socket.emit("ON_MESSAGE", 'script destroyed');
+                },
+                (message: any) => {
+                    socket.emit("ON_MESSAGE", message);
+                })
+                .catch((e: any) => {
+                    socket.emit("ON_MESSAGE", `process not found ${JSON.stringify(e)}`);
+                    console.log(e);
+                });
+        }).catch(e => console.log(e));
+    }
+
 
     socket.on("IsServerUp", async () => {
-        io.emit("IsServerUp", { isServerUp: true });
+        io.emit("IsServerUp", {isServerUp: true});
     });
 
     socket.on("GET_DEVICES", () => {
@@ -95,7 +115,7 @@ io.on("connection", (socket) => {
             }
         } catch (e) {
             console.log(e);
-        } 
+        }
 
     });
 
@@ -105,70 +125,29 @@ io.on("connection", (socket) => {
         });
     });
 
-    socket.on("UNLOAD_SCRIPTS", async () => { 
+    socket.on("UNLOAD_SCRIPTS", async () => {
         await injectionManager.unload_scripts();
-    }); 
+    });
 
-    socket.on("RUN_APP", async (data) => {
-        const deviceId = data[0];
-        const appName = data[1];
+    socket.on("RUN_APP", async (data: [string, string]) => {
+        const [deviceId, appName] = data;
         let device = await deviceManager.getDevice(deviceId);
 
         await injectionManager.run_app(device, appName).then((pid) => {
             socket.emit("ON_MESSAGE", `App ${appName} is running now with id : ${pid}`);
-        });
+        }).catch(e => console.log(e));
     });
 
-    socket.on("ATTACH", async (data) => {
-        const deviceId = data[0];
-        const appName = data[1];
-        const script = data[2];
-
-        console.log(data);
-
-        let device = await deviceManager.getDevice(deviceId);
- 
-        await injectionManager.attach(
-            device,
-            script,
-            appName,
-            () => {
-                socket.emit("ON_MESSAGE", 'script destroyed');
-            },
-            (message) => {
-                socket.emit("ON_MESSAGE", message);
-            })
-            .catch((e) => {
-                socket.emit("ON_MESSAGE", `process not found ${JSON.stringify(e)}`);
-                console.log(e);
-            });
+    socket.on("ATTACH", async (data: [string, string, string]) => {
+        const [deviceId, appName, script] = data;
+        handleAttachOrLaunch(deviceId, appName, script, 'attach');
     });
 
-    socket.on("LAUNCH", async (data) => {
-        const deviceId = data[0];
-        const appPackage = data[1];
-        const scriptNames = data[2];
-        const customScript = data[3];
-        let device = await deviceManager.getDevice(deviceId);
-
-        //todo make take multiple file names and merge them
+    socket.on("LAUNCH", async (data: [string, string, string, string]) => {
+        const [deviceId, appPackage, scriptNames, customScript] = data;
         let script = getScriptsFromCache(scriptNames) || AppInfoScript;
         script = appendScript(script, customScript);
-
-        await injectionManager.launch(
-            device,
-            script,
-            appPackage,
-            () => {
-                socket.emit("ON_MESSAGE", 'script destroyed');
-            },
-            (message) => {
-                socket.emit("ON_MESSAGE", message);
-            })
-            .catch((e) => {
-                socket.emit("ON_MESSAGE", `process not found ${JSON.stringify(e)}`);
-                console.log(e);
-            });
+        handleAttachOrLaunch(deviceId, appPackage, script, 'launch');
     });
 
     //todo : you have to refresh this everytime you modify a file
@@ -185,7 +164,7 @@ io.on("connection", (socket) => {
         const scriptsList = Array.from(scriptsMap.entries())
             .map(
                 ([script, value]) =>
-                    ({ script, value })
+                    ({script, value})
             );
 
         socket.emit("SCRIPTS", scriptsList);
