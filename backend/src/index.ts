@@ -5,9 +5,7 @@ import {Device} from "frida/dist/device";
 import http from "http";
 import {Server} from "socket.io";
 import {DeviceManagerService} from "./DeviceManagerService";
-import {FilesManager} from "./FilesManager";
 import {InjectionManager} from "./InjectionManager";
-import {AppInfoScript} from "./scripts";
 
 const app = express();
 let scriptsMap = new Map<string, string>();
@@ -141,33 +139,6 @@ io.on("connection", (socket) => {
     socket.on("ATTACH", async (data: [string, string, string]) => {
         const [deviceId, appName, script] = data;
         handleAttachOrLaunch(deviceId, appName, script, 'attach');
-    });
-
-    socket.on("LAUNCH", async (data: [string, string, string, string]) => {
-        const [deviceId, appPackage, scriptNames, customScript] = data;
-        let script = getScriptsFromCache(scriptNames) || AppInfoScript;
-        script = appendScript(script, customScript);
-        handleAttachOrLaunch(deviceId, appPackage, script, 'launch');
-    });
-
-    //todo : you have to refresh this everytime you modify a file
-    socket.on("SCRIPTS_PATH", (path) => {
-        const fileReader = new FilesManager();
-        fileReader.readJSFiles(path, (fileMap) => {
-            scriptsMap = fileMap
-            socket.emit("SCRIPTS", Array.from(fileMap.keys()));
-        })
-    });
-
-    socket.on("GET_SCRIPTS", () => {
-        const fileReader = new FilesManager();
-        const scriptsList = Array.from(scriptsMap.entries())
-            .map(
-                ([script, value]) =>
-                    ({script, value})
-            );
-
-        socket.emit("SCRIPTS", scriptsList);
     });
 });
 

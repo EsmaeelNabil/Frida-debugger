@@ -40,32 +40,47 @@ fun ApplicationsComponent(
             applicationsArea(
                 offlineApps = partitionedApplications.first,
                 activeApps = partitionedApplications.second,
+                openAppWithStartupScript = {
+                    onAppSelected(it)
+                    launchApp(it, selectedDevice, socket)
+                }
             ) { selectedApp ->
                 onAppSelected(selectedApp)
-
-                if (selectedApp.pid == 0)
-                    socket.emit(
-                        SocketEvents.RUN_APP.name,
-                        listOf(
-                            selectedDevice.deviceDetails.id,
-                            selectedApp.identifier
-                        )
-                    )
-                else
-                    socket.emit(
-                        SocketEvents.ATTACH.name,
-                        listOf(
-                            selectedDevice.deviceDetails.id,
-                            selectedApp.name,
-                            defaultScript
-                        )
-                    )
-
-                socket.emit(SocketEvents.GET_APPS.name, selectedDevice.deviceDetails.id)
-
+                launchApp(selectedApp, selectedDevice, socket)
             }
         }
     }
+}
+
+fun launchApp(
+    selectedApp: Application,
+    selectedDevice: Device,
+    socket: Socket,
+    script: String = defaultScript
+) {
+
+    if (selectedApp.pid == 0)
+        socket.emit(
+            SocketEvents.RUN_APP.name,
+            listOf(
+                selectedDevice.deviceDetails.id,
+                selectedApp.identifier,
+                // TODO: add this to backend, in case the app isn't running, launch it with a script.
+                script
+            )
+        )
+    else
+        socket.emit(
+            SocketEvents.ATTACH.name,
+            listOf(
+                selectedDevice.deviceDetails.id,
+                selectedApp.name,
+                script
+            )
+        )
+
+    socket.emit(SocketEvents.GET_APPS.name, selectedDevice.deviceDetails.id)
+
 }
 
 
@@ -73,7 +88,8 @@ fun ApplicationsComponent(
 fun applicationsArea(
     offlineApps: List<Application>,
     activeApps: List<Application>,
-    onApplicationClicked: (Application) -> Unit
+    openAppWithStartupScript: (Application) -> Unit = {},
+    onApplicationClicked: (Application) -> Unit = {}
 ) {
 
     LazyColumn(modifier = Modifier.padding(24.dp).fillMaxWidth()) {
@@ -87,9 +103,13 @@ fun applicationsArea(
                 )
             }
             items(activeApps) { app ->
-                ApplicationItem(app) {
-                    onApplicationClicked(app)
-                }
+                ApplicationItem(
+                    app = app,
+                    onClick = { onApplicationClicked(app) },
+                    openAppWithStartupScript = {
+                        openAppWithStartupScript(app)
+                    }
+                )
             }
         }
 
@@ -103,9 +123,13 @@ fun applicationsArea(
                 )
             }
             items(offlineApps) { app ->
-                ApplicationItem(app) {
-                    onApplicationClicked(app)
-                }
+                ApplicationItem(
+                    app = app,
+                    onClick = { onApplicationClicked(app) },
+                    openAppWithStartupScript = {
+                        openAppWithStartupScript(app)
+                    }
+                )
             }
         }
 
@@ -115,7 +139,11 @@ fun applicationsArea(
 }
 
 @Composable
-fun ApplicationItem(app: Application = Application(), onClick: () -> Unit = {}) {
+fun ApplicationItem(
+    app: Application = Application(),
+    onClick: () -> Unit = {},
+    openAppWithStartupScript: () -> Unit = {}
+) {
     val appIsRunning = app.pid.toString() != "0"
     var showMore by remember { mutableStateOf(false) }
     Column {
@@ -170,7 +198,11 @@ fun ApplicationItem(app: Application = Application(), onClick: () -> Unit = {}) 
                 ApplicationTreat("started : ${app.parameters.started}")
                 ApplicationTreat("targetSdk : ${app.parameters.targetSdk}")
                 ApplicationTreat("debuggable : ${app.parameters.debuggable}")
-
+                TextButton(onClick = {
+                    openAppWithStartupScript()
+                }) {
+                    Text("Open app with custom script")
+                }
             }
         }
     }

@@ -1,0 +1,14 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "3002:3002"
+    security_opt:
+      - seccomp:unconfined
+    privileged: true
+    volumes:
+      - /dev/bus/usb:/dev/bus/usb

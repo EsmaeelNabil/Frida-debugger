@@ -37,7 +37,8 @@ compose.desktop {
         mainClass = "MainKt"
 
         nativeDistributions {
-            modules("jdk.crypto.ec")
+            modules("jdk.crypto.ec", "java.instrument", "jdk.unsupported")
+            includeAllModules = true
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
             packageName = "com.sam.godfather_ui"
             packageVersion = "1.0.0"
