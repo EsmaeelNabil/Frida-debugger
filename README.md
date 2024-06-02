@@ -1,65 +1,62 @@
-# Frida-debugger 
-```
-- Is a Mobile Development/Testing/Debugging/Security tool that gives you superpowers
-- Powered by Frida, currently only supporting Android soon IOS.
-```
+# Frida-debugger
 
-<img width="1371" alt="Screenshot 2024-02-03 at 11 42 17 PM" src="https://github.com/EsmaeelNabil/Frida-debugger/assets/28542963/8188f2f9-1ddf-4c10-b375-f90ca0b69129">
+Frida-debugger is a powerful tool designed for mobile development, testing, debugging, and security analysis, powered by the Frida framework. It currently supports Android platforms, with plans for expansion to iOS and OSX in the future.
 
+![Frida-debugger Screenshot](https://github.com/EsmaeelNabil/Frida-debugger/assets/28542963/8188f2f9-1ddf-4c10-b375-f90ca0b69129)
 
-##### prerequisite
+## Overview
+
+Frida-debugger provides a robust set of features for enhancing mobile development and security analysis. Here's how you can get started:
+
+## Prerequisites
+
+Before using Frida-debugger, ensure you have the following prerequisites installed:
 
 - `node`
 - `yarn`
-- Android Development Environment
+- Android Development Environment:
   - `gradle`
   - `jdk`
   - `ADB`
 
-##### installation
+## Installation
 
-```
-git clone https://github.com/EsmaeelNabil/Frida-debugger.git
-cd Frida-debugger/backend
-yarn install
-```
+Follow these steps to install and run Frida-debugger:
 
-##### running in dev mode
-- for `backend` 
+1. Clone the repository:
 
-do `cd Frida-debugger/backend` and run 
+    ```bash
+    git clone https://github.com/EsmaeelNabil/Frida-debugger.git
+    ```
 
-```
-yarn start
-```
+2. Navigate to the backend directory:
 
-###### Docker 
-```
-  docker build -t frida-debugger .
-```
-then 
-```
-  docker run --security-opt seccomp:unconfined -it --privileged -p 3002:3002 frida-debugger
-```
+    ```bash
+    cd Frida-debugger/backend
+    ```
 
-- for `front-end` do `cd Frida-debugger/front-end`
+3. Install dependencies:
 
-```
+    ```bash
+    yarn install
+    ```
+
+4. Build the project:
+
+    ```bash
+    yarn build
+    ```
+
+5. Start the backend server:
+
+    ```bash
+    node dist/bundle.js
+    ```
+
+## Running the Desktop App
+
+To run the desktop app, execute the following commands:
+
+```bash
+cd Frida-debugger/front-end
 ./gradlew run
-```
-
-
----
-
-##### How to use
-- `runEmulator.sh` to launch an emulator
-  - `Android SDK` is required
-- `prepareFridaEmulator.sh` to ship `frida server` to the emulator.
-  - Has to be done everytime if it's not saved in the emulator in case of restarts.
-  - You need to run it again if you couldn't see a `pid` with a message like this `Frida server is running on  with pid 21420.`
-  - `ADB` is required
-
-in case you need an updated `Frida-Server` use `tools/fmc` to download it.
-```
-but it has to be renamed to fridaserver for ./prepareFridaEmulator.sh to work properly.
-```
