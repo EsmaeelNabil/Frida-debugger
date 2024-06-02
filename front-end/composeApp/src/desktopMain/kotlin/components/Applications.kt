@@ -11,6 +11,7 @@ import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.rounded.Gavel
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -24,6 +25,7 @@ import io.socket.client.Socket
 import models.Application
 import models.Device
 import network.SocketEvents
+import ScriptInputDialog
 
 
 @Composable
@@ -33,7 +35,10 @@ fun ApplicationsComponent(
     socket: Socket,
     onAppSelected: (Application) -> Unit
 ) {
-    Column {
+    var showScriptInputDialog by remember { mutableStateOf(false) }
+    var selectedApp by remember { mutableStateOf(Application()) }
+
+    Box {
         AnimatedVisibility(
             partitionedApplications.first.isNotEmpty() || partitionedApplications.second.isNotEmpty()
         ) {
@@ -41,12 +46,24 @@ fun ApplicationsComponent(
                 offlineApps = partitionedApplications.first,
                 activeApps = partitionedApplications.second,
                 openAppWithStartupScript = {
-                    onAppSelected(it)
-                    launchApp(it, selectedDevice, socket)
+                    selectedApp = it
+                    showScriptInputDialog = true
                 }
             ) { selectedApp ->
                 onAppSelected(selectedApp)
                 launchApp(selectedApp, selectedDevice, socket)
+            }
+
+
+            if (showScriptInputDialog) {
+                ScriptInputDialog(
+                    initialScript = defaultScript,
+                    onDismissRequest = { showScriptInputDialog = !showScriptInputDialog },
+                    onConfirmation = { newScript ->
+                        onAppSelected(selectedApp)
+                        launchApp(selectedApp, selectedDevice, socket, newScript)
+                    }
+                )
             }
         }
     }
@@ -61,11 +78,10 @@ fun launchApp(
 
     if (selectedApp.pid == 0)
         socket.emit(
-            SocketEvents.RUN_APP.name,
+            SocketEvents.LAUNCH.name,
             listOf(
                 selectedDevice.deviceDetails.id,
                 selectedApp.identifier,
-                // TODO: add this to backend, in case the app isn't running, launch it with a script.
                 script
             )
         )
@@ -163,7 +179,7 @@ fun ApplicationItem(
 
             Surface(
                 modifier = Modifier.fillMaxWidth().padding(16.dp).weight(1f)
-                        then (Modifier.clickable { onClick() }),
+                    .clickable { showMore = !showMore },
                 shape = RoundedCornerShape(8.dp),
                 elevation = 3.dp,
                 color = Color.White
@@ -179,30 +195,40 @@ fun ApplicationItem(
                     }
 
                     IconButton(onClick = {
-                        showMore = !showMore
+                        openAppWithStartupScript()
                     }) {
                         Icon(
-                            Icons.Filled.ExpandMore, null,
+                            Icons.Rounded.Gavel, "Run with startup script",
                             tint = MaterialTheme.colorScheme.onSurface
                         )
                     }
-                    Spacer(modifier = Modifier.width(16.dp))
+
+                    IconButton(onClick = {
+                        showMore = !showMore
+                    }) {
+                        Icon(
+                            Icons.Filled.ExpandMore, "More information",
+                            tint = MaterialTheme.colorScheme.onSurface
+                        )
+                    }
+
+                    IconButton(onClick = onClick) {
+                        Icon(
+                            Icons.Filled.PlayArrow, "Run app",
+                            tint = MaterialTheme.colorScheme.onSurface
+                        )
+                    }
                 }
             }
         }
         AnimatedVisibility(showMore) {
-            Column(modifier = Modifier.padding(horizontal = 24.dp)) {
+            Column(modifier = Modifier.padding(horizontal = 62.dp)) {
                 ApplicationTreat("Build number : ${app.parameters.build}")
                 ApplicationTreat("Version number : ${app.parameters.version}")
                 ApplicationTreat("dataDir : ${app.parameters.dataDir}")
                 ApplicationTreat("started : ${app.parameters.started}")
                 ApplicationTreat("targetSdk : ${app.parameters.targetSdk}")
                 ApplicationTreat("debuggable : ${app.parameters.debuggable}")
-                TextButton(onClick = {
-                    openAppWithStartupScript()
-                }) {
-                    Text("Open app with custom script")
-                }
             }
         }
     }
@@ -212,7 +238,7 @@ fun ApplicationItem(
 private fun ApplicationTreat(treat: String) {
     Text(
         treat,
-        fontWeight = FontWeight.Thin,
+        fontWeight = FontWeight.Bold,
         color = MaterialTheme.colorScheme.onSurface
     )
 }

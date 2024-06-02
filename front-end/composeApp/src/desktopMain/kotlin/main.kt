@@ -1,87 +1,85 @@
-import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowDownward
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Minimize
-import androidx.compose.material.icons.filled.MoveToInbox
-import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.staticCompositionLocalOf
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.FrameWindowScope
-import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
-import androidx.compose.ui.window.rememberWindowState
-import io.socket.client.Socket
-import network.SocketManager
-import theme.AppTheme
+import kotlinx.coroutines.*
+import java.io.File
 
 
-val LocalSocket = staticCompositionLocalOf<Socket> {
-    error("No socket provided")
-}
-
-val LocalWindowFrameScope = staticCompositionLocalOf<FrameWindowScope> {
-    error("No socket provided")
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
 fun main() = application {
+    val appPath = getAppPath()
 
-    val socket = SocketManager.getClient().connect()
+    FridaApp(onCloseRequest = ::exitApplication)
+//    NodeProcessManager(
+//        nodeCommand = "/Users/esmaeelmoustafa/Pdev/Frida-debugger/backend/node_modules/.bin/ts-node",
+//        scriptPath = "/Users/esmaeelmoustafa/Pdev/Frida-debugger/backend/src/index.ts",
+//        workingDirectory = "/Users/esmaeelmoustafa/Pdev/Frida-debugger/backend/src/"
+//    ).start()
+}
 
-    CompositionLocalProvider(LocalSocket provides socket) {
-        val windowState = rememberWindowState()
-        Window(
-            state = windowState,
-            onCloseRequest = ::exitApplication,
-            transparent = true,
-            undecorated = true,
-            title = "Compose App"
-        ) {
-            AppTheme {
-                WindowDraggableArea {
-                    CompositionLocalProvider(LocalWindowFrameScope provides this) {
-                        App(
-                            onMainApplicationClose = ::exitApplication,
-                            onMainApplicationMinimize = {
-                                windowState.isMinimized = true
-                            }
-                        )
+fun getAppPath(): String {
+    val path = File(
+        NodeProcessManager::class.java.protectionDomain.codeSource.location.toURI()
+    ).parentFile.parentFile.path
+    return "$path/Resources/YourNodeProject"
+}
+
+
+class NodeProcessManager(
+    private val nodeCommand: String,
+    private val scriptPath: String,
+    private val workingDirectory: String
+) {
+
+    private val scope = CoroutineScope(Dispatchers.IO + SupervisorJob())
+
+    fun start() {
+        startAndMonitorNodeProcess()
+
+        // Keep the main application running
+        println("Kotlin desktop application is running.")
+    }
+
+    private fun startAndMonitorNodeProcess() {
+        scope.launch {
+            while (isActive) {
+                val command = listOf(nodeCommand, scriptPath)
+                val workingDir = File(workingDirectory)
+
+                try {
+                    val processBuilder = ProcessBuilder(command).directory(workingDir)
+                    val process = processBuilder.start()
+
+                    // Capture and print the output
+                    captureOutput(process)
+
+                    // Wait for the process to complete
+                    val exitCode = process.waitFor()
+                    println("Process exited with code $exitCode")
+
+                    // Restart the process if it exits with a non-zero code
+                    if (exitCode != 0) {
+                        println("Restarting process...")
                     }
+
+                } catch (e: Exception) {
+                    e.printStackTrace()
                 }
+
+                // Delay before restarting to avoid a rapid retry loop
+                delay(1000)
             }
         }
     }
 
-}
+    private fun captureOutput(process: Process) {
+        scope.launch {
+            process.inputStream.bufferedReader().useLines { lines ->
+                lines.forEach { println("OUTPUT: $it") }
+            }
+        }
 
-
-@Composable
-fun ControlIcon(
-    modifier: Modifier = Modifier,
-    containerSize: Dp = 24.dp,
-    iconSize: Dp = 10.dp,
-    icon: ImageVector,
-    onClick: () -> Unit = { }
-) {
-
-    Surface(modifier, shape = CircleShape) {
-        IconButton(
-            modifier = Modifier.size(containerSize),
-            onClick = onClick
-        ) {
-            Icon(
-                modifier = Modifier.size(iconSize),
-                imageVector = icon,
-                contentDescription = "Close",
-            )
+        scope.launch {
+            process.errorStream.bufferedReader().useLines { lines ->
+                lines.forEach { println("ERROR: $it") }
+            }
         }
     }
 }

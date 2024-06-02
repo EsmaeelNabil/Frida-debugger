@@ -1,12 +1,10 @@
-@file:OptIn(ExperimentalFoundationApi::class, ExperimentalFoundationApi::class, ExperimentalMaterialApi::class)
+@file:OptIn(ExperimentalFoundationApi::class)
 
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.*
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -14,9 +12,11 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.FrameWindowScope
+import androidx.compose.ui.window.Window
+import androidx.compose.ui.window.rememberWindowState
 import components.DrawerComponent
 import components.PagerArea
 import components.TopBar
@@ -27,6 +27,48 @@ import models.ApplicationsResponse
 import models.Device
 import models.DevicesResponse
 import network.SocketEvents
+import network.SocketManager
+import theme.AppTheme
+
+
+val LocalSocket = staticCompositionLocalOf<Socket> {
+    error("No socket provided")
+}
+
+val LocalWindowFrameScope = staticCompositionLocalOf<FrameWindowScope> {
+    error("No socket provided")
+}
+
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun FridaApp(onCloseRequest: () -> Unit = {}) {
+    val socket = SocketManager.getClient().connect()
+
+    CompositionLocalProvider(LocalSocket provides socket) {
+        val windowState = rememberWindowState()
+        Window(
+            state = windowState,
+            onCloseRequest = onCloseRequest,
+            transparent = true,
+            undecorated = true,
+            title = "Frida Debugger"
+        ) {
+            AppTheme {
+                WindowDraggableArea {
+                    CompositionLocalProvider(LocalWindowFrameScope provides this) {
+                        App(
+                            onMainApplicationClose = onCloseRequest,
+                            onMainApplicationMinimize = {
+                                windowState.isMinimized = true
+                            }
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
 
 @OptIn(ExperimentalFoundationApi::class)
 @ExperimentalMaterial3Api
@@ -37,12 +79,23 @@ fun App(
 ) {
 
     val socket = LocalSocket.current
+    var selectedDevice by remember { mutableStateOf(Device()) }
 
+    // fetch devices on each change to the selection
+    LaunchedEffect(selectedDevice) {
+        if (selectedDevice.deviceDetails.id.isNotEmpty()) {
+            socket.emit(SocketEvents.GET_APPS.name, selectedDevice.deviceDetails.id)
+        }
+    }
+
+    var selectedApp by remember { mutableStateOf(Application()) }
 
     val devices by SocketEvents.DEVICES.onEventFlow(
         socket = socket,
         evaluation = {
-            DevicesResponse.getDevices(it.toString())
+            val devices = DevicesResponse.getDevices(it.toString())
+            selectedDevice = devices.lastOrNull() ?: Device()
+            devices
         }
     ).collectAsState(listOf())
 
@@ -64,14 +117,8 @@ fun App(
         }
     }
 
-    var selectedDevice by remember { mutableStateOf(Device()) }
-    var selectedApp by remember { mutableStateOf(Application()) }
-
     val pages = listOf(Pages.APPS, Pages.SCRIPT)
     val pagerState = rememberPagerState(pageCount = { pages.size })
-
-
-
 
     Box(
         modifier = Modifier.fillMaxSize()

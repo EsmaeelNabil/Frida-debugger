@@ -2,34 +2,29 @@
 
 package components
 
-import ControlIcon
-import LocalSocket
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Chip
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDownward
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material3.*
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import emptyString
-import kotlinx.coroutines.launch
 import models.Device
 import models.DeviceDetails
-import network.SocketEvents
-import setHorizontalGradient
 
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun DrawerComponent(
     modifier: Modifier,
@@ -40,7 +35,6 @@ fun DrawerComponent(
     onDeviceSelected: (Device) -> Unit = {}
 ) {
 
-    val socket = LocalSocket.current
     val shimmerList = remember {
         mutableStateOf(List(4) {
             Device(DeviceDetails(name = emptyString))
@@ -82,7 +76,6 @@ fun DrawerComponent(
                         modifier = Modifier.padding(horizontal = 8.dp).wrapContentWidth(),
                         onClick = {
                             onDeviceSelected(device)
-                            socket.emit(SocketEvents.GET_APPS.name, device.deviceDetails.id)
                         }
                     ) {
                         val weight =
