@@ -18,6 +18,22 @@ import androidx.compose.ui.unit.dp
 import models.Device
 
 
+/**
+ * This function displays a devices area for the application.
+ * @param devices The list of devices to be displayed in the devices area.
+ * @param selectedDevice The selected device.
+ * @param onDeviceSelected The action to be performed when a device is selected.
+ * @param onFetchApps The action to be performed when the apps are fetched.
+ *
+ * Example usage:
+ * ```kotlin
+ * DevicesArea(
+ *     devices = listOf(),
+ *     selectedDevice = Device(DeviceDetails(name = emptyString)),
+ *     onDeviceSelected = { },
+ *     onFetchApps = { }
+ * )
+ */
 @Composable
 fun DevicesArea(
     devices: List<Device> = listOf(),
@@ -54,7 +70,22 @@ fun DevicesArea(
 
 }
 
-
+/**
+ * This function displays a device chip for the application.
+ * @param modifier The modifier to be applied to the device chip.
+ * @param name The name of the device.
+ * @param selected The state of the device chip.
+ * @param onClick The action to be performed when the device chip is clicked.
+ *
+ * Example usage:
+ * ```kotlin
+ * DeviceChip(
+ *     modifier = Modifier,
+ *     name = emptyString,
+ *     selected = false,
+ *     onClick = { }
+ * )
+ */
 @Composable
 fun DeviceChip(
     modifier: Modifier = Modifier,
