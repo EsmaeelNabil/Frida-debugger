@@ -52,7 +52,15 @@ val LocalWindowFrameScope = staticCompositionLocalOf<FrameWindowScope> {
 
 /**
  * This is the main application component. It sets up the socket connection and the window for the application.
+ *
  * @param onCloseRequest A function to be called when the window close request is triggered.
+ *
+ * Example usage:
+ * ```kotlin
+ * FridaApp(
+ *     onCloseRequest = { /* action to perform on window close request */ }
+ * )
+ * ```
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -88,6 +96,13 @@ fun FridaApp(onCloseRequest: () -> Unit = {}) {
  * This is the main application layout. It sets up the socket connection, fetches devices and applications, and sets up the main layout.
  * @param onMainApplicationClose A function to be called when the main application close request is triggered.
  * @param onMainApplicationMinimize A function to be called when the main application minimize request is triggered.
+ * * Example usage:
+ *  ```kotlin
+ *   App(
+ *       onMainApplicationClose = { /* action to perform on main application close request */ },
+ *       onMainApplicationMinimize = { /* action to perform on main application minimize request */ }
+ *   )
+ *  ```
  */
 @OptIn(ExperimentalFoundationApi::class)
 @ExperimentalMaterial3Api
@@ -173,14 +188,29 @@ fun App(
 }
 
 /**
- * This is the main application content wrapper. It sets up the surface for the application content and includes the top bar and pager area.
- * @param modifier The modifier to be applied to the surface.
- * @param pagerState The state of the pager.
- * @param partitionedApplications The applications partitioned by whether they are running or not.
- * @param selectedDevice The currently selected device.
- * @param socket The current socket connection.
- * @param selectedApp The currently selected application.
+ * This is the main application content wrapper. It sets up the main application content area.
+ *
+ * @param modifier The modifier for the content wrapper.
+ * @param pagerState The pager state for the content wrapper.
+ * @param partitionedApplications The partitioned applications for the content wrapper.
+ * @param selectedDevice The selected device for the content wrapper.
+ * @param socket The socket connection for the content wrapper.
+ * @param selectedApp The selected application for the content wrapper.
  * @param onAppSelected A function to be called when an application is selected.
+ *
+ * Example usage:
+ * ```kotlin
+ * AppHomeContentWrapper(
+ *     modifier = Modifier.fillMaxSize(),
+ *     pagerState = pagerState,
+ *     partitionedApplications = partitionedApplications,
+ *     selectedDevice = selectedDevice,
+ *     socket = socket,
+ *     selectedApp = selectedApp
+ * ) {
+ *     selectedApp = it
+ * }
+ * ```
  */
 @Composable
 fun AppHomeContentWrapper(

@@ -6,7 +6,10 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.json.Json
 import java.lang.Exception
 
-
+/**
+ * This data class represents the devices response.
+ * @property devices The list of devices.
+ */
 @Serializable
 data class DevicesResponse(
     val devices: List<Device>

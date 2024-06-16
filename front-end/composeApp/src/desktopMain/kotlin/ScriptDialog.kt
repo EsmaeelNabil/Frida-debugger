@@ -10,7 +10,22 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import kotlin.io.path.readText
 
-
+/**
+ * This function displays a dialog to input a script.
+ *
+ * @param initialScript The initial script to display in the dialog.
+ * @param onDismissRequest The action to be performed when the dialog is dismissed.
+ * @param onConfirmation The action to be performed when the dialog is confirmed.
+ *
+ * Example usage:
+ * ```kotlin
+ * ScriptInputDialog(
+ *     initialScript = "console.log('Hello, World!')",
+ *     onDismissRequest = { /* action to perform on dialog dismiss */ },
+ *     onConfirmation = { script -> /* action to perform on dialog confirmation */ }
+ * )
+ * ```
+ */
 @Composable
 fun ScriptInputDialog(
     initialScript: String = "",
@@ -33,8 +48,6 @@ fun ScriptInputDialog(
             }
         )
     }
-
-
 
     Dialog(onDismissRequest = onDismissRequest) {
         Card(

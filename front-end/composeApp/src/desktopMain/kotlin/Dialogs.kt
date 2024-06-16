@@ -13,6 +13,22 @@ import java.io.File
 import java.nio.file.Path
 import javax.swing.JOptionPane
 
+/**
+ * This function displays a file dialog.
+ *
+ * @param title The title of the dialog.
+ * @param isLoad A flag to indicate whether the dialog is for loading a file.
+ * @param onResult The action to be performed when the dialog is closed.
+ *
+ * Example usage:
+ * ```kotlin
+ * FileDialog(
+ *     title = "Choose a file",
+ *     isLoad = true,
+ *     onResult = { result -> /* action to perform with the result */ }
+ * )
+ * ```
+ */
 @Composable
 fun FrameWindowScope.FileDialog(
     title: String,
@@ -38,6 +54,20 @@ fun FrameWindowScope.FileDialog(
     dispose = FileDialog::dispose
 )
 
+/**
+ * This function displays a message dialog.
+ *
+ * @param title The title of the dialog.
+ * @param message The message to be displayed.
+ *
+ * Example usage:
+ * ```kotlin
+ * MessageDialog(
+ *     title = "Information",
+ *     message = "This is an information message."
+ * )
+ * ```
+ */
 @OptIn(DelicateCoroutinesApi::class)
 @Composable
 fun WindowScope.YesNoCancelDialog(
@@ -64,6 +94,20 @@ fun WindowScope.YesNoCancelDialog(
     }
 }
 
+/**
+ * This function displays a message dialog.
+ *
+ * @param title The title of the dialog.
+ * @param message The message to be displayed.
+ *
+ * Example usage:
+ * ```kotlin
+ * MessageDialog(
+ *     title = "Information",
+ *     message = "This is an information message."
+ * )
+ * ```
+ */
 enum class AlertDialogResult {
     Yes, No, Cancel
 }

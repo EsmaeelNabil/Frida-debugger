@@ -29,6 +29,23 @@ import models.Application
 import models.Device
 import onEventFlow
 
+/**
+ * This function displays the script screen.
+ *
+ * @param socket The socket connection to the server.
+ * @param selectedDevice The device that has been selected by the user.
+ * @param selectedApp The application that has been selected by the user.
+ * @param onBack The action to be performed when the back button is clicked.
+ *
+ * Example usage:
+ * ```kotlin
+ * ScriptScreen(
+ *     socket = socket,
+ *     selectedDevice = device,
+ *     selectedApp = app,
+ *     onBack = { /* action to perform on back button click */ }
+ * )
+ */
 @Composable
 fun ScriptScreen(socket: Socket, selectedDevice: Device, selectedApp: Application, onBack: () -> Job) {
 
@@ -153,6 +170,19 @@ fun ScriptScreen(socket: Socket, selectedDevice: Device, selectedApp: Applicatio
 
 }
 
+/**
+ * This function displays the script message component.
+ *
+ * @param messages The list of messages to be displayed.
+ * @param scrollState The state of the scroll.
+ *
+ * Example usage:
+ * ```kotlin
+ * ScriptMessageComponent(
+ *     messages = listOf("message1", "message2"),
+ *     scrollState = rememberLazyListState()
+ * )
+ */
 @Preview()
 @Composable
 fun ScriptMessageComponent(messages: List<String>, scrollState: LazyListState) {
@@ -165,6 +195,21 @@ fun ScriptMessageComponent(messages: List<String>, scrollState: LazyListState) {
     }
 }
 
+/**
+ * This function displays the button debugger.
+ *
+ * @param onClick The action to be performed when the button is clicked.
+ * @param content The content to be displayed on the button.
+ *
+ * Example usage:
+ * ```kotlin
+ * ButtonDebugger(
+ *     onClick = { /* action to perform on button click */ },
+ *     content = {
+ *         Text("Button")
+ *     }
+ * )
+ */
 @Composable
 fun ButtonDebugger(
     onClick: () -> Unit, content: @Composable RowScope.() -> Unit
