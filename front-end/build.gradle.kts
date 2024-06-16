@@ -13,4 +13,5 @@ subprojects {
 
 tasks.dokkaHtmlMultiModule {
     outputDirectory.set(file("../docs"))
+    includes.from(project.layout.projectDirectory.file("../README.md"))
 }
