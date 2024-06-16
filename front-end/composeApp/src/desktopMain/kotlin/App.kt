@@ -31,15 +31,29 @@ import network.SocketManager
 import theme.AppTheme
 
 
+/**
+ * This file contains the main application components for the Frida Debugger.
+ * It includes the main application window, the application layout, and the application content wrapper.
+ */
+
+/**
+ * This is a composition local that provides the current socket connection.
+ */
 val LocalSocket = staticCompositionLocalOf<Socket> {
     error("No socket provided")
 }
 
+/**
+ * This is a composition local that provides the current window frame scope.
+ */
 val LocalWindowFrameScope = staticCompositionLocalOf<FrameWindowScope> {
     error("No socket provided")
 }
 
-
+/**
+ * This is the main application component. It sets up the socket connection and the window for the application.
+ * @param onCloseRequest A function to be called when the window close request is triggered.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FridaApp(onCloseRequest: () -> Unit = {}) {
@@ -70,6 +84,11 @@ fun FridaApp(onCloseRequest: () -> Unit = {}) {
     }
 }
 
+/**
+ * This is the main application layout. It sets up the socket connection, fetches devices and applications, and sets up the main layout.
+ * @param onMainApplicationClose A function to be called when the main application close request is triggered.
+ * @param onMainApplicationMinimize A function to be called when the main application minimize request is triggered.
+ */
 @OptIn(ExperimentalFoundationApi::class)
 @ExperimentalMaterial3Api
 @Composable
@@ -153,6 +172,16 @@ fun App(
 
 }
 
+/**
+ * This is the main application content wrapper. It sets up the surface for the application content and includes the top bar and pager area.
+ * @param modifier The modifier to be applied to the surface.
+ * @param pagerState The state of the pager.
+ * @param partitionedApplications The applications partitioned by whether they are running or not.
+ * @param selectedDevice The currently selected device.
+ * @param socket The current socket connection.
+ * @param selectedApp The currently selected application.
+ * @param onAppSelected A function to be called when an application is selected.
+ */
 @Composable
 fun AppHomeContentWrapper(
     modifier: Modifier,

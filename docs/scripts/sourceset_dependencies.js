@@ -1,0 +1,1 @@
+sourceset_dependencies = '{":composeApp:dokkaHtmlPartial/commonMain":[],":composeApp:dokkaHtmlPartial/desktopMain":[":composeApp:dokkaHtmlPartial/commonMain"]}'

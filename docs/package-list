@@ -1,0 +1,41 @@
+$dokka.format:html-v1
+$dokka.linkExtension:html
+$dokka.location:////PointingToDeclaration/composeApp/[root]/index.html
+$dokka.location://App/#kotlin.Function0[kotlin.Unit]#kotlin.Function0[kotlin.Unit]/PointingToDeclaration/composeApp/[root]/-app.html
+$dokka.location://AppHomeContentWrapper/#androidx.compose.ui.Modifier#androidx.compose.foundation.pager.PagerState#androidx.compose.runtime.MutableState[kotlin.Pair[kotlin.collections.List[models.Application],kotlin.collections.List[models.Application]]]#models.Device#io.socket.client.Socket#models.Application#kotlin.Function1[models.Application,kotlin.Unit]/PointingToDeclaration/composeApp/[root]/-app-home-content-wrapper.html
+$dokka.location://FileDialog/androidx.compose.ui.window.FrameWindowScope#kotlin.String#kotlin.Boolean#kotlin.Function1[java.nio.file.Path?,kotlin.Unit]/PointingToDeclaration/composeApp/[root]/-file-dialog.html
+$dokka.location://FridaApp/#kotlin.Function0[kotlin.Unit]/PointingToDeclaration/composeApp/[root]/-frida-app.html
+$dokka.location://LocalSocket/#/PointingToDeclaration/composeApp/[root]/-local-socket.html
+$dokka.location://LocalWindowFrameScope/#/PointingToDeclaration/composeApp/[root]/-local-window-frame-scope.html
+$dokka.location://ScriptInputDialog/#kotlin.String#kotlin.Function0[kotlin.Unit]#kotlin.Function1[kotlin.String,kotlin.Unit]/PointingToDeclaration/composeApp/[root]/-script-input-dialog.html
+$dokka.location://WindowDraggableArea/androidx.compose.ui.window.WindowScope#androidx.compose.ui.Modifier#kotlin.Function0[kotlin.Unit]/PointingToDeclaration/composeApp/[root]/-window-draggable-area.html
+$dokka.location://YesNoCancelDialog/androidx.compose.ui.window.WindowScope#kotlin.String#kotlin.String#kotlin.Function1[AlertDialogResult,kotlin.Unit]/PointingToDeclaration/composeApp/[root]/-yes-no-cancel-dialog.html
+$dokka.location://currentDateTimeString/java.time.LocalDateTime#kotlin.String/PointingToDeclaration/composeApp/[root]/current-date-time-string.html
+$dokka.location://currentTime/#/PointingToDeclaration/composeApp/[root]/current-time.html
+$dokka.location://defaultScript/#/PointingToDeclaration/composeApp/[root]/default-script.html
+$dokka.location://emptyString/#/PointingToDeclaration/composeApp/[root]/empty-string.html
+$dokka.location://main/#/PointingToDeclaration/composeApp/[root]/main.html
+$dokka.location://onEventFlow/network.SocketEvents#io.socket.client.Socket#kotlin.Function1[kotlin.Any?,TypeParam(bounds=[kotlin.Any?])]/PointingToDeclaration/composeApp/[root]/on-event-flow.html
+$dokka.location://setHorizontalGradient/androidx.compose.ui.Modifier#kotlin.Array[kotlin.Pair[kotlin.Float,androidx.compose.ui.graphics.Color]]/PointingToDeclaration/composeApp/[root]/set-horizontal-gradient.html
+$dokka.location:/AlertDialogResult.Cancel///PointingToDeclaration/{"org.jetbrains.dokka.links.EnumEntryDRIExtra":{"key":"org.jetbrains.dokka.links.EnumEntryDRIExtra"}}composeApp/[root]/-alert-dialog-result/-cancel/index.html
+$dokka.location:/AlertDialogResult.No///PointingToDeclaration/{"org.jetbrains.dokka.links.EnumEntryDRIExtra":{"key":"org.jetbrains.dokka.links.EnumEntryDRIExtra"}}composeApp/[root]/-alert-dialog-result/-no/index.html
+$dokka.location:/AlertDialogResult.Yes///PointingToDeclaration/{"org.jetbrains.dokka.links.EnumEntryDRIExtra":{"key":"org.jetbrains.dokka.links.EnumEntryDRIExtra"}}composeApp/[root]/-alert-dialog-result/-yes/index.html
+$dokka.location:/AlertDialogResult///PointingToDeclaration/composeApp/[root]/-alert-dialog-result/index.html
+$dokka.location:/AlertDialogResult/entries/#/PointingToDeclaration/composeApp/[root]/-alert-dialog-result/entries.html
+$dokka.location:/AlertDialogResult/valueOf/#kotlin.String/PointingToDeclaration/composeApp/[root]/-alert-dialog-result/value-of.html
+$dokka.location:/AlertDialogResult/values/#/PointingToDeclaration/composeApp/[root]/-alert-dialog-result/values.html
+$dokka.location:/Pages.APPS///PointingToDeclaration/{"org.jetbrains.dokka.links.EnumEntryDRIExtra":{"key":"org.jetbrains.dokka.links.EnumEntryDRIExtra"}}composeApp/[root]/-pages/-a-p-p-s/index.html
+$dokka.location:/Pages.SCRIPT///PointingToDeclaration/{"org.jetbrains.dokka.links.EnumEntryDRIExtra":{"key":"org.jetbrains.dokka.links.EnumEntryDRIExtra"}}composeApp/[root]/-pages/-s-c-r-i-p-t/index.html
+$dokka.location:/Pages///PointingToDeclaration/composeApp/[root]/-pages/index.html
+$dokka.location:/Pages/entries/#/PointingToDeclaration/composeApp/[root]/-pages/entries.html
+$dokka.location:/Pages/index/#/PointingToDeclaration/composeApp/[root]/-pages/--index--.html
+$dokka.location:/Pages/valueOf/#kotlin.String/PointingToDeclaration/composeApp/[root]/-pages/value-of.html
+$dokka.location:/Pages/values/#/PointingToDeclaration/composeApp/[root]/-pages/values.html
+module:composeApp
+components
+devices
+models
+network
+scripts
+theme
+utils
