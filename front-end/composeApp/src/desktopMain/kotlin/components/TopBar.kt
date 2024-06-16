@@ -22,6 +22,20 @@ import androidx.compose.ui.unit.dp
 import models.Device
 import network.SocketEvents
 
+/**
+ * This function displays a top bar for the application.
+ * @param modifier The modifier to be applied to the top bar.
+ * @param pagerState The pager state to be used.
+ * @param selectedDevice The selected device.
+ *
+ * Example usage:
+ * ```kotlin
+ * TopBar(
+ *     modifier = Modifier,
+ *     pagerState = PagerState(),
+ *     selectedDevice = Device(DeviceDetails(name = emptyString))
+ * )
+ */
 @Composable
 fun TopBar(
     modifier: Modifier,

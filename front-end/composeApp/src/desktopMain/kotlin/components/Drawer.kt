@@ -23,7 +23,26 @@ import emptyString
 import models.Device
 import models.DeviceDetails
 
-
+/**
+ * This function displays a drawer component for the application.
+ * @param modifier The modifier to be applied to the drawer component.
+ * @param devices The list of devices to be displayed in the drawer.
+ * @param selectedDevice The selected device.
+ * @param onMainApplicationClose The action to be performed when the main application is closed.
+ * @param onMainApplicationMinimize The action to be performed when the main application is minimized.
+ * @param onDeviceSelected The action to be performed when a device is selected.
+ *
+ * Example usage:
+ * ```kotlin
+ * DrawerComponent(
+ *     modifier = Modifier,
+ *     devices = listOf(),
+ *     selectedDevice = Device(DeviceDetails(name = emptyString)),
+ *     onMainApplicationClose = { },
+ *     onMainApplicationMinimize = { },
+ *     onDeviceSelected = { }
+ * )
+ */
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun DrawerComponent(

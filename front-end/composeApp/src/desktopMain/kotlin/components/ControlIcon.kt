@@ -11,6 +11,24 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
+/**
+ * This function displays a control icon for the application.
+ * @param modifier The modifier to be applied to the control icon.
+ * @param containerSize The size of the container of the control icon.
+ * @param iconSize The size of the icon.
+ * @param icon The icon to be displayed.
+ * @param onClick The action to be performed when the control icon is clicked.
+ *
+ * Example usage:
+ * ```kotlin
+ * ControlIcon(
+ *     modifier = Modifier,
+ *     containerSize = 24.dp,
+ *     iconSize = 10.dp,
+ *     icon = Icons.Default.Close,
+ *     onClick = { }
+ * )
+ */
 @Composable
 fun ControlIcon(
     modifier: Modifier = Modifier,

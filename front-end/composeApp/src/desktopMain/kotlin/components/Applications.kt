@@ -28,6 +28,27 @@ import network.SocketEvents
 import ScriptInputDialog
 
 
+/**
+ * This file contains the components related to the applications in the Frida Debugger.
+ * It includes the main application component, the application item, and the application area.
+ */
+
+/**
+ * This is the main application component. It sets up the application area and handles the application selection and launching.
+ * @param partitionedApplications The applications partitioned by whether they are running or not.
+ * @param selectedDevice The currently selected device.
+ * @param socket The current socket connection.
+ * @param onAppSelected A function to be called when an application is selected.
+ *
+ * Example usage:
+ * ```kotlin
+ * ApplicationsComponent(
+ *     partitionedApplications = Pair(listOf(Application()), listOf(Application())),
+ *     selectedDevice = Device(),
+ *     socket = Socket(),
+ *     onAppSelected = { app -> println("Selected app: ${app.name}") }
+ *   )
+ */
 @Composable
 fun ApplicationsComponent(
     partitionedApplications: Pair<List<Application>, List<Application>>,
@@ -69,6 +90,22 @@ fun ApplicationsComponent(
     }
 }
 
+/**
+ * This function launches the selected application on the selected device.
+ * @param selectedApp The application to be launched.
+ * @param selectedDevice The device on which the application will be launched.
+ * @param socket The current socket connection.
+ * @param script The script to be run when the application is launched.
+ *
+ * Example usage:
+ * ```kotlin
+ * launchApp(
+ *     selectedApp = Application(),
+ *     selectedDevice = Device(),
+ *     socket = Socket(),
+ *     script = "console.log('Hello, World!')"
+ * )
+ */
 fun launchApp(
     selectedApp: Application,
     selectedDevice: Device,
@@ -99,7 +136,22 @@ fun launchApp(
 
 }
 
-
+/**
+ * This function displays the applications area.
+ * @param offlineApps The list of offline applications.
+ * @param activeApps The list of active applications.
+ * @param openAppWithStartupScript A function to be called when an application is opened with a startup script.
+ * @param onApplicationClicked A function to be called when an application is clicked.
+ *
+ * Example usage:
+ * ```kotlin
+ * applicationsArea(
+ *     offlineApps = listOf(Application()),
+ *     activeApps = listOf(Application()),
+ *     openAppWithStartupScript = { app -> println("Opening app with startup script: ${app.name}") },
+ *     onApplicationClicked = { app -> println("Clicked on app: ${app.name}") }
+ *   )
+ */
 @Composable
 fun applicationsArea(
     offlineApps: List<Application>,
@@ -154,6 +206,20 @@ fun applicationsArea(
 
 }
 
+/**
+ * This function displays an application item.
+ * @param app The application to be displayed.
+ * @param onClick A function to be called when the application is clicked.
+ * @param openAppWithStartupScript A function to be called when the application is opened with a startup script.
+ *
+ * Example usage:
+ * ```kotlin
+ * ApplicationItem(
+ *     app = Application(),
+ *     onClick = { println("Clicked on app") },
+ *     openAppWithStartupScript = { println("Opening app with startup script") }
+ *   )
+ */
 @Composable
 fun ApplicationItem(
     app: Application = Application(),
@@ -234,6 +300,14 @@ fun ApplicationItem(
     }
 }
 
+/**
+ * This function displays a treat for the application.
+ * @param treat The treat to be displayed.
+ *
+ * Example usage:
+ * ```kotlin
+ * ApplicationTreat("Build number : 1")
+ */
 @Composable
 private fun ApplicationTreat(treat: String) {
     Text(

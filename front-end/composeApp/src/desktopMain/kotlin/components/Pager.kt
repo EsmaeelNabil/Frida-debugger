@@ -20,7 +20,25 @@ import models.Device
 import network.SocketEvents
 import scripts.ScriptScreen
 
-
+/**
+ * This function displays a pager area for the application.
+ * @param pagerState The pager state to be used.
+ * @param partitionedApplications The partitioned applications to be displayed.
+ * @param selectedDevice The selected device.
+ * @param socket The socket to be used.
+ * @param selectedApp The selected application.
+ * @param onAppSelected The action to be performed when an application is selected.
+ *
+ * Example usage:
+ * ```kotlin
+ * PagerArea(
+ *     pagerState = PagerState(),
+ *     partitionedApplications = mutableStateOf(Pair(listOf(), listOf())),
+ *     selectedDevice = Device(DeviceDetails(name = emptyString)),
+ *     socket = Socket(),
+ *     selectedApp = Application()
+ * )
+ */
 @Composable
 fun PagerArea(
     pagerState: PagerState,
