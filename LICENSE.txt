@@ -1,0 +1,23 @@
+GNU GENERAL PUBLIC LICENSE
+Version 3, 29 June 2007
+
+Copyright (C) 2024 Esmaeel Nabil Mohamed Moustafa
+
+Everyone is permitted to copy and distribute verbatim copies
+of this license document, but changing it is not allowed.
+
+This software is licensed under the GNU General Public License (GPL) Version 3.0.
+
+You are free to use, modify, and distribute this software under the terms of the GPL, provided that you give appropriate credit to the original author, Esmaeel Nabil Mohamed Moustafa.
+
+For commercial use or production environments, please contact Esmaeel Nabil Mohamed Moustafa at [your email address] to obtain a commercial license.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+Date: 2024
