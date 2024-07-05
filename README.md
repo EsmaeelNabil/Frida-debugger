@@ -63,7 +63,7 @@ cd Frida-debugger/front-end
 commands:
 ```
 
-
+```
 ## Licensing
 
 This project is licensed under the GNU General Public License (GPL) Version 3.0. You are free to use, modify, and distribute this software under the terms of the GPL, provided that you give appropriate credit to the original author, Esmaeel Nabil Mohamed Moustafa.
@@ -74,3 +74,4 @@ For commercial use or production environments, please contact Esmaeel Nabil Moha
 For inquiries about commercial licenses or any other questions, please reach out to Esmaeel Nabil Mohamed Moustafa at esmaeel.moustafa.n@gmail.com .
 
 Date: 2024
+```
