@@ -1,4 +1,6 @@
 import androidx.compose.ui.window.application
+import javax.script.ScriptEngineManager
+
 
 /**
  * The main entry point for the application.
@@ -8,4 +10,6 @@ import androidx.compose.ui.window.application
  */
 fun main() = application {
     FridaApp(onCloseRequest = ::exitApplication)
+
+
 }

@@ -4,6 +4,7 @@ import org.jetbrains.compose.ExperimentalComposeLibrary
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.jetbrainsCompose)
+    alias(libs.plugins.compose.compiler)
     kotlin("plugin.serialization") version "1.9.22"
 }
 
@@ -23,10 +24,11 @@ kotlin {
             implementation(compose.material3)
             implementation(compose.preview)
             implementation(compose.materialIconsExtended)
-            @OptIn(ExperimentalComposeLibrary::class)
             implementation(compose.components.resources)
+            implementation("io.github.dokar3:quickjs-kt:1.0.0-alpha13")
             implementation("io.socket:socket.io-client:2.1.0")
             implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.2")
+
         }
     }
 }
@@ -44,4 +46,10 @@ compose.desktop {
             packageVersion = "1.0.0"
         }
     }
+}
+
+compose.resources {
+    publicResClass = true
+    packageOfResClass = "com.sam.godfather.resources"
+    generateResClass = always
 }

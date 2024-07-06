@@ -1,14 +1,28 @@
-@file:OptIn(ExperimentalFoundationApi::class)
+@file:OptIn(ExperimentalFoundationApi::class, ExperimentalResourceApi::class)
 
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -21,6 +35,7 @@ import components.DrawerComponent
 import components.PagerArea
 import components.TopBar
 import io.socket.client.Socket
+import javax.script.ScriptEngineManager
 import kotlinx.coroutines.delay
 import models.Application
 import models.ApplicationsResponse
@@ -28,6 +43,7 @@ import models.Device
 import models.DevicesResponse
 import network.SocketEvents
 import network.SocketManager
+import org.jetbrains.compose.resources.ExperimentalResourceApi
 import theme.AppTheme
 
 
@@ -65,6 +81,14 @@ val LocalWindowFrameScope = staticCompositionLocalOf<FrameWindowScope> {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FridaApp(onCloseRequest: () -> Unit = {}) {
+
+    ScriptEngineManager().getEngineByName("Graal.js")
+
+    val engines = ScriptEngineManager().engineFactories
+    for (f in engines) {
+        println(f.languageName + " " + f.engineName + " " + f.names)
+    }
+
     val socket = SocketManager.getClient().connect()
 
     CompositionLocalProvider(LocalSocket provides socket) {
