@@ -8,7 +8,19 @@ Frida-debugger is a powerful tool designed for mobile development, testing, debu
 
 Frida-debugger provides a robust set of features for enhancing mobile development and security analysis. Here's how you can get started:
 
-## Prerequisites
+## Usage
+
+To run the web app, execute the following commands:
+
+```bash
+cd Frida-debugger
+docker compose up
+```
+
+---
+
+
+## Development Prerequisites
 
 Before using Frida-debugger, ensure you have the following prerequisites installed:
 
@@ -19,7 +31,7 @@ Before using Frida-debugger, ensure you have the following prerequisites install
   - `jdk`
   - `ADB`
 
-## Installation
+## Development
 
 Follow these steps to install and run Frida-debugger:
 
