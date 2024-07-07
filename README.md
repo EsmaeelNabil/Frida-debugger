@@ -58,7 +58,7 @@ Follow these steps to install and run Frida-debugger:
 To run the desktop app, execute the following commands:
 
 ```bash
-cd Frida-debugger/front-end
+cd Frida-debugger/front-end-desktop
 ./gradlew run
 ```
 

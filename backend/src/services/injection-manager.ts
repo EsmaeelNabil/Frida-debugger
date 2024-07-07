@@ -45,6 +45,7 @@ export class InjectionManager {
       const session = await device.attach(pid);
       await this.createAndLoadScript(session, scriptSource, onScriptDestroyed, onNewMessage);
     } catch (e) {
+      onNewMessage('[*] ' + e.message);
       console.error("Error handling app:", e);
     }
   }

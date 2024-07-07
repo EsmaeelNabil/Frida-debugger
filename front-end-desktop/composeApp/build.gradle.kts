@@ -1,5 +1,4 @@
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
-import org.jetbrains.compose.ExperimentalComposeLibrary
 
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
@@ -44,6 +43,12 @@ compose.desktop {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
             packageName = "com.sam.godfather_ui"
             packageVersion = "1.0.0"
+
+
+            macOS {
+                packageName = "GodfatherUI"
+
+            }
         }
     }
 }
@@ -52,4 +57,10 @@ compose.resources {
     publicResClass = true
     packageOfResClass = "com.sam.godfather.resources"
     generateResClass = always
+}
+
+
+tasks.register<Copy>("copyNodeBundle") {
+    from("backend/dist/bundle.js")
+    into("$buildDir/processedResources/js")
 }

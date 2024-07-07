@@ -75,11 +75,35 @@ export class DeviceManagerService {
     return [];
   }
 
+  async getAppsFull(deviceId: string): Promise<Application[]> {
+    const device = await this.getDevice(deviceId);
+    if (device) {
+      try {
+        return await device.enumerateApplications({ scope: Scope.Full });
+      } catch (e) {
+        console.error(e);
+      }
+    }
+    return [];
+  }
+
   async getApp(deviceId: string, appName: string): Promise<Application | undefined> {
     const device = await this.getDevice(deviceId);
     if (device) {
       try {
         const applications = await device.enumerateApplications({ scope: Scope.Minimal });
+        return applications.find(app => app.name.toLowerCase().includes(appName.toLowerCase()));
+      } catch (e) {
+        console.error(e);
+      }
+    }
+  }
+
+  async getFullApp(deviceId: string, appName: string): Promise<Application | undefined> {
+    const device = await this.getDevice(deviceId);
+    if (device) {
+      try {
+        const applications = await device.enumerateApplications({ scope: Scope.Full });
         return applications.find(app => app.name.toLowerCase().includes(appName.toLowerCase()));
       } catch (e) {
         console.error(e);

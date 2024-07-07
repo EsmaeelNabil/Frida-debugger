@@ -82,13 +82,6 @@ val LocalWindowFrameScope = staticCompositionLocalOf<FrameWindowScope> {
 @Composable
 fun FridaApp(onCloseRequest: () -> Unit = {}) {
 
-    ScriptEngineManager().getEngineByName("Graal.js")
-
-    val engines = ScriptEngineManager().engineFactories
-    for (f in engines) {
-        println(f.languageName + " " + f.engineName + " " + f.names)
-    }
-
     val socket = SocketManager.getClient().connect()
 
     CompositionLocalProvider(LocalSocket provides socket) {

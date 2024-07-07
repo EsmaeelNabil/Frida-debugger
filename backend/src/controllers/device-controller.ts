@@ -37,6 +37,18 @@ export function initializeSocket(io: Server) {
       }
     });
 
+    socket.on('GET_APP', async (data) => {
+      console.log('GET_APP', data);
+      const app = await deviceManager.getFullApp(data.deviceId, data.appName);
+      socket.emit('APP', app);
+    });
+
+    socket.on('GET_ALL_APPS', async (deviceId) => {
+      console.log('GET_ALL_APPS', deviceId);
+      const apps = await deviceManager.getAppsFull(deviceId);
+      socket.emit('ALL_APPS', apps);
+    });
+
     socket.on('GET_PROCESSES', async (deviceId: string) => {
       const processes = await deviceManager.getProcesses(deviceId);
       socket.emit('PROCESSES', processes);
@@ -55,6 +67,18 @@ export function initializeSocket(io: Server) {
       const [deviceId, appName, script] = data;
       handleAttachOrLaunch(socket, deviceManager, injectionManager, deviceId, appName, script, 'attach');
     });
+
+    socket.on('ATTACH_TO_APP', async (data) => {
+      console.log('ATTACH_TO_APP', data);
+      handleAttachOrLaunch(socket, deviceManager, injectionManager, data.deviceId, data.appName, data.script, 'attach');
+    });
+
+    socket.on('LAUNCH_APP', async (data) => {
+      console.log('LAUNCH_APP', data);
+      handleAttachOrLaunch(socket, deviceManager, injectionManager, data.deviceId, data.appIdentifier, data.script, 'launch');
+    });
+
+    
   });
 }
 
@@ -80,8 +104,8 @@ async function handleAttachOrLaunch(
   try {
     const device = await deviceManager.getDevice(deviceId);
     if (device) {
-      await injectionManager[event](device, script, appName, 
-        () => socket.emit('ON_MESSAGE', 'Script destroyed'), 
+      await injectionManager[event](device, script, appName,
+        () => socket.emit('ON_MESSAGE', 'Script destroyed'),
         (message: any) => socket.emit('ON_MESSAGE', message)
       );
     } else {
