@@ -1,5 +1,5 @@
 # Use the latest Node.js image
-FROM node:latest
+FROM node:20-bullseye
 
 RUN apt-get update && apt-get install -y android-tools-adb
 ENV ANDROID_ADB_SERVER_ADDRESS="host.docker.internal" 

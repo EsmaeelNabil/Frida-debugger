@@ -62,6 +62,14 @@ cd Frida-debugger/front-end-desktop
 ./gradlew run
 ```
 
+## Running the Web App + Backend in docker
+
+To run the web app, execute the following commands:
+
+```bash
+cd Frida-debugger
+docker compose up
+```
 
 ## Licensing
 ```
