@@ -1,23 +1,10 @@
-import React, { useEffect, useState } from 'react';
-
 const IconBuffer = ({ icon }) => {
-  const [iconSrc, setIconSrc] = useState('');
-
-  useEffect(() => {
-    if (icon && icon.image) {
-      const base64String = arrayBufferToBase64(icon.image);
-      setIconSrc(`data:image/png;base64,${base64String}`);
-    }
-  }, [icon]);
+  const { image, format, width, height } = icon;
+  const base64Image = arrayBufferToBase64(image);
+  const src = `data:image/${format};base64,${base64Image}`;
 
   return (
-    <div>
-      {iconSrc ? (
-        <img src={iconSrc} alt="Icon" />
-      ) : (
-        <p>Loading...</p>
-      )}
-    </div>
+    <img src={src} alt="icon" width={width} height={height} />
   );
 };
 
