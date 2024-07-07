@@ -2,12 +2,15 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { useSocket } from '../context/SocketContext';
 import { useParams } from 'react-router-dom';
 import IconBuffer from './IconBuffer';
-import { FilePicker } from 'evergreen-ui';
+import { CollapseAllIcon, FilePicker, Table } from 'evergreen-ui';
 import Editor from 'react-simple-code-editor';
 import { highlight, languages } from 'prismjs/components/prism-core';
 import 'prismjs/components/prism-clike';
 import 'prismjs/components/prism-javascript';
 import 'prismjs/themes/prism.css';
+
+import { LogViewer, LogViewerSearch } from "@patternfly/react-log-viewer";
+import { Toolbar, ToolbarContent, ToolbarItem } from "@patternfly/react-core";
 
 const AppDetails = () => {
   let fileReader;
@@ -17,7 +20,12 @@ const AppDetails = () => {
   // Messages
   const [messages, setMessages] = useState([]);
   const addMessage = (data) => {
-    setMessages((prevMessages) => [...prevMessages, data]);
+    console.log(data.toString());
+    setMessages((prevMessages) => [...prevMessages, data.toString()]);
+  };
+
+  const clearMessages = () => {
+    setMessages([]);
   };
 
   // Script content
@@ -57,7 +65,6 @@ const AppDetails = () => {
 
 
 
-
   const attachToApp = () => {
     socket.emit('ATTACH_TO_APP', { deviceId: deviceId, appName: appName, script: code });
   };
@@ -65,6 +72,10 @@ const AppDetails = () => {
   const launchApp = () => {
     socket.emit('LAUNCH_APP', { deviceId: deviceId, appIdentifier: appIdentifier, script: code });
   };
+
+  const unloadScripts = () => {
+    socket.emit('UNLOAD_SCRIPTS');
+  }
 
   if (!appDetails) {
     return <p>Loading...</p>;
@@ -79,15 +90,6 @@ const AppDetails = () => {
             <IconBuffer icon={appDetails.parameters.icons[0]} />
           </div>
           <span className={`font-mono rounded-md p-2 text-black ${appDetails.pid === 0 ? 'bg-red-200' : 'bg-green-100'}`}>{appDetails.name}</span>
-        </div>
-        <div className='flex space-x-2'>
-          {
-            appDetails.pid !== 0 ?
-              <button className='rounded-md bg-green-500 text-white font-mono shadow-md p-2' onClick={attachToApp}>Attach</button>
-              : <></>
-          }
-
-          <button className='rounded-md bg-yellow-300  text-black font-mono shadow-md p-2 hover:animate-pulse' onClick={launchApp}>Launch App</button>
         </div>
       </div>
 
@@ -106,7 +108,22 @@ const AppDetails = () => {
         <span>version : {appDetails.parameters.version}</span>
       </div>
 
-      <FilePicker className='m-10' accept={".js"} width={400} onChange={(files) => setFiles(files)} placeholder="Select the file here!" />
+      <div className='flex flex-wrap text-center items-center justify-stretch'>
+        <FilePicker className='m-10' accept={".js"} width={400} onChange={(files) => setFiles(files)} placeholder="Select the file here!" />
+        <div className='flex space-x-2'>
+          {
+            appDetails.pid !== 0 ?
+              <button className='rounded-md bg-green-500 text-white font-mono shadow-md p-2' onClick={attachToApp}>Attach</button>
+              : <></>
+          }
+
+          <button className='rounded-md bg-yellow-300  text-black font-mono shadow-md p-2 hover:animate-pulse' onClick={launchApp}>Launch App</button>
+          <button className='rounded-md bg-red-300  text-black font-mono shadow-md p-2 hover:animate-pulse' onClick={unloadScripts}>Unload Scripts</button>
+          <button className='rounded-md bg-red-300  text-black font-mono shadow-md p-2 hover:animate-pulse' onClick={clearMessages}>Clear Messages</button>
+
+        </div>
+      </div>
+
 
 
       <Editor
@@ -117,7 +134,7 @@ const AppDetails = () => {
         padding={10}
         style={{
           fontFamily: '"Fira code", "Fira Mono", monospace',
-          fontSize: 14,
+          fontSize: 12,
         }}
       />
 
@@ -125,23 +142,19 @@ const AppDetails = () => {
         messages.length === 0 ? <></> : <span className='text-xl font-bold m-8'>Messages</span>
       }
 
+      {/* highlight(code, languages.javascript) */}
 
-
-      <div className='m-8 h-96 overflow-y-auto shadow-xl'>
-        {
-          messages.map((message, index) =>
-          (
-            <div key={index} className=''>
-              <span className='text-sm text-gray-400'>[MESSAGE]</span>
-              <span className='text-gray-900'> {message}</span>
-            </div>
-          )
-          )
-        }
+      
+      <div className='m-8'>
+        <LogViewer
+          hasLineNumbers={true}
+          height={500}
+          data={messages}
+          theme="light"
+          isTextWrapped={true}
+        />
 
       </div>
-
-
 
     </div >
   );

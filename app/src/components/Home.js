@@ -2,7 +2,6 @@
 import React, { useEffect, useState } from 'react';
 import { useSocket } from '../context/SocketContext';
 import { useNavigate } from 'react-router-dom';
-import IconBuffer from './IconBuffer';
 
 const Home = () => {
     const socket = useSocket();
