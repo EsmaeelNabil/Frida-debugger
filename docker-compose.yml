@@ -14,7 +14,7 @@ services:
       - /dev/bus/usb:/dev/bus/usb
   client:
     build:
-      context: ./front-end-web
+      context: ./app
       dockerfile: Dockerfile
     ports:
       - "3000:3000"
