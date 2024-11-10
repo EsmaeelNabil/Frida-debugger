@@ -3,6 +3,10 @@
  */
 const debug = false; // Set to true to enable debug logging, false to disable
 
+// List of class names to hook; leave empty to hook all classes in the app's package
+// If not empty, only classes whose names contain one of these strings will be hooked
+const classesToHook = ["WorkTasksViewModel"]; // Add class names here
+
 // List of function names to hook; leave empty to hook all functions
 // If not empty, only functions whose names contain one of these strings will be hooked
 const functionsToHook = ["save"]; // Add function names here
@@ -42,6 +46,20 @@ function debugSend(message) {
 }
 
 /**
+ * Helper function: shouldHookClass
+ * Determines if a class should be hooked based on the configured classesToHook list.
+ *
+ * @param {string} className - The name of the class to check.
+ * @returns {boolean} - True if the class should be hooked, false otherwise.
+ */
+function shouldHookClass(className) {
+  if (classesToHook.length === 0) return true; // Hook all if list is empty
+  return classesToHook.some((name) =>
+    className.toLowerCase().includes(name.toLowerCase()),
+  );
+}
+
+/**
  * Helper function: shouldHookFunction
  * Determines if a function should be hooked based on the configured functionsToHook list.
  *
@@ -77,8 +95,8 @@ Java.perform(function () {
   var appPrefix = substringUntilDelimiterCount(packageName, ".", 2);
 
   classes.forEach(function (className) {
-    // Only process classes that belong to the application package
-    if (className.startsWith(appPrefix)) {
+    // Only process classes that belong to the application package and match classesToHook
+    if (className.startsWith(appPrefix) && shouldHookClass(className)) {
       try {
         debugSend("Processing class: " + className);
 
@@ -115,10 +133,7 @@ Java.perform(function () {
                     let argValue = arguments[k];
 
                     // Handle specific Java types
-                    if (
-                      paramTypeNames[k] === "java.util.List" ||
-                      paramTypeNames[k] === "kotlin.coroutines.Continuation"
-                    ) {
+                    if (paramTypeNames[k] === "java.util.List") {
                       argValue = JSON.stringify(argValue.toArray());
                     } else {
                       argValue = argValue.toString();
