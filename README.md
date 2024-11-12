@@ -7,7 +7,7 @@ Frida-debugger is a powerful tool designed for mobile development, testing, debu
 |                     -                     |               -                |
 | :--------------------------------------------: | :----------------------------------------: |
 | ![Frida-debugger Screenshot](/art/devices.jpg) | ![Frida-debugger Screenshot](/art/apps.jpg) |
-|  ![Frida-debugger Screenshot](/art/appin.jpg)  |                     --                     |
+|  <img width="1512" alt="image" src="https://github.com/user-attachments/assets/6ae66ab5-7eae-4812-9b7a-577b7726c33e">  |                     --                     |
 
 ## Usage
 
