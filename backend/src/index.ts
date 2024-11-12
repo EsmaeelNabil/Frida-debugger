@@ -1,37 +1,49 @@
 import cors from 'cors';
 import express from 'express';
 import http from 'http';
-import { Server } from 'socket.io';
-import { initializeSocket } from './controllers/device-controller';
+import {Server} from 'socket.io';
+import {config} from './config';
+import {initializeSocket} from './controllers/device-controller';
 
 const app = express();
 const server = http.createServer(app);
 
 const io = new Server(server, {
-  cors: {
-    origin: "*",
-    methods: ["GET", "POST"],
-  },
+    cors: config.socket.cors,
+    pingTimeout: config.socket.pingTimeout,
+    pingInterval: config.socket.pingInterval
 });
 
 app.use(cors());
 
-server.listen(3002, () => {
-  console.log("Listening on port 3002");
+server.listen(config.server.port, () => {
+    console.log(`Server listening on port ${config.server.port}`);
 });
 
-// Initialize socket connection and handle events
 initializeSocket(io);
 
-// Gracefully shut down the server on exit signals
-process.once("SIGUSR2", () => {
-  process.kill(process.pid, "SIGUSR2");
+// Graceful shutdown handling
+const cleanup = () => {
+    console.log('Shutting down...');
+    server.close(() => {
+        console.log('Server stopped');
+        process.exit(0);
+    });
+};
+
+process.on('SIGINT', cleanup);
+process.on('SIGTERM', cleanup);
+process.once('SIGUSR2', () => {
+    cleanup();
+    process.kill(process.pid, 'SIGUSR2');
 });
 
-process.on("SIGINT", () => {
-  console.log("Shutting down...");
-  server.close(() => {
-    console.log("Server stopped");
-    process.exit(0);
-  });
+process.on('uncaughtException', (error) => {
+    console.error('Uncaught Exception:', error);
+    cleanup();
+});
+
+process.on('unhandledRejection', (reason, promise) => {
+    console.error('Unhandled Rejection at:', promise, 'reason:', reason);
+    cleanup();
 });
